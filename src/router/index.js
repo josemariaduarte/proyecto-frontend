@@ -1,14 +1,20 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import Categoria from '../components/Categoria.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'home',
     component: Home
+  },
+  {
+    path: '/categoria',
+    name: 'categoria',
+    component: Categoria
   },
   {
     path: '/about',

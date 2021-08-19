@@ -182,7 +182,7 @@
         <v-icon>logout</v-icon>
       </v-btn>
     </v-app-bar>
-    <v-content>
+    <v-main>
       <v-container
         fluid
         fill-height
@@ -191,7 +191,7 @@
           <router-view/>
         </v-slide-y-transition>
       </v-container>
-    </v-content>
+    </v-main>
     <v-footer height="auto">
       <v-layout justify-center>
         <v-flex text-xs-center>
