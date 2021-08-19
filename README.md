@@ -1,4 +1,4 @@
-# proyecto
+# proyecto de facultad de Nestor Duarte
 
 ## Project setup
 ```
