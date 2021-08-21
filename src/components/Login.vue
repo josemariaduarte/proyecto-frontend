@@ -48,14 +48,20 @@
             // this.setOverlay(true)
 
             let self = this;
-            const { status, data } = await self.login({ username: self.username, password: self.password })
-            if (status && status === HTTP.SUCCESS.OK) {
-              await self.$router.push({name: 'home'})
-            } else {
-              // this.setErrorMessage(data.message)
+            try {
+              const { status, data } = await self.login({ username: self.username, password: self.password })
+              if (status && status === HTTP.SUCCESS.OK) {
+                await self.$router.push({name: 'home'})
+              } else {
+                // this.setErrorMessage(data.message)
+                self.errorLogin = 'Ocurrio un error con el servidor';
+              }
+              // this.setOverlay(false)
+            }catch {
               self.errorLogin = 'Ocurrio un error con el servidor';
+
             }
-            // this.setOverlay(false)
+              
           },
       
 

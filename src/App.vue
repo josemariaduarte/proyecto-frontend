@@ -3,6 +3,7 @@
     <v-navigation-drawer
       v-model="drawer"
       :clipped="$vuetify.breakpoint.lgAndUp"
+      v-if="logueado"
       app
     >
       <v-list dense>
@@ -16,7 +17,7 @@
             </v-list-item-title>
           </v-list-item>
         </template>
-        <template>
+        <template v-if="esAdministrador || esFuncionario">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -47,7 +48,7 @@
             </v-list-item>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador || esFuncionario">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -78,7 +79,7 @@
             </v-list-item>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador || esFuncionario">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -109,7 +110,7 @@
             </v-list-item>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -130,7 +131,7 @@
             </v-list-item>
           </v-list-group>
         </template>
-        <template>
+        <template v-if="esAdministrador">
           <v-list-group>
             <v-list-item slot="activator">
               <v-list-item-content>
@@ -178,9 +179,12 @@
         <span class="hidden-sm-and-down">Sistema</span>
       </v-toolbar-title>      
       <v-spacer></v-spacer>
-      <v-btn icon>
+      <v-btn @click="salir()" icon v-if="logueado">
         <v-icon>logout</v-icon>
       </v-btn>
+      <!-- <v-btn :to="{name: 'login'}" icon v-else="!logueado">
+        <v-icon>apps</v-icon>
+      </v-btn> -->
     </v-app-bar>
     <v-main>
       <v-container
@@ -214,6 +218,34 @@ export default {
     return {
       drawer: true
     }
-  }
+  },
+
+  computed:{
+      logueado(){
+        console.log('logueado')
+        return this.$store.state.access;
+      },
+
+      esAdministrador(){
+        return true;
+        return this.$store.state.user && this.$store.state.user.rol == 'Administrador';
+      },
+
+      esFuncionario(){
+        return this.$store.state.user && this.$store.state.user.rol == 'Funcionario';
+      },
+
+      
+    },
+
+    created() {
+      this.$store.dispatch('autoLogin');
+    }, 
+    methods: {
+
+      salir(){
+        this.$store.dispatch("salir");
+      }
+    }
 };
 </script>

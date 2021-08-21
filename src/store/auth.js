@@ -20,7 +20,7 @@ export default new Vuex.Store({
       state.user = payload
     },
 
-    SET_ACCESS_TOKEN (state, payload) {
+    SET_ACCESS_TOKEN(state, payload) {
       state.access = payload
     },
 
@@ -33,7 +33,7 @@ export default new Vuex.Store({
 
     login: async ({ commit, state }, payload) => {
       // eliminamos datos viejos de la cabecera en Authorization
-      delete axios.defaults.headers.common.Authorization
+      // delete axios.defaults.headers.common.Authorization
 
       const res = await AuthService.login(payload)
       if (res.status && res.status === HTTP.SUCCESS.OK) {
@@ -57,26 +57,28 @@ export default new Vuex.Store({
       return res
     },
 
-    guardarToken({commit}, token){
-      // permite almacenar en el local storage
-      commit("setToken", token)
-      localStorage.setItem("token", token)
-    },
-
-    autoLogin(){
+    autoLogin({commit, dispatch}){
       // si tengo una variable en el local storage, que no me pida el token
-      let token = localStorage.getItem("token");
+      let token = localStorage.getItem("access");
       if (token) {
-        commit("setToken", token)
+        commit("SET_ACCESS_TOKEN", token);
+        router.push({name: 'home'});
+      } else {
+        dispatch('redirectToLogin')
       }
-      // redireccionamos al home
-      router.push({name: 'home'});
     },
 
-    salir(){
+
+    redirectToLogin: async () => {
+      await router.push({ name: 'login' })
+    },
+
+    salir({commit}){
       // eliminar el token del local storage
-      commit("setToken", null)
-      localStorage.removeItem("token");
+      commit("SET_ACCESS_TOKEN", null);
+      commit("SET_USER", null);
+      commit('SET_ROL', null);
+      localStorage.removeItem("access");
       router.push({name: 'login'});
     }
 

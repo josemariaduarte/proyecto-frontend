@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export default class AuthService {
-  static async login (payload) {
+  static  async login (payload) {
     /**
      * Función que realiza una llamada al backend para obtener
      * el acceso del usuario.
