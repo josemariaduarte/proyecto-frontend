@@ -29,34 +29,36 @@
     </v-layout>
 </template>
 <script>
-    import axios from 'axios';
+    import { mapActions, mapMutations } from 'vuex'
+    import { HTTP } from '@/utils/constants'
     export  default {
+      name: 'Login',
       data () {
         return {
-          username:'',
-          password:'',
+          username: null,
+          password: null,
           errorLogin:'',
         }
       },
       methods: {
-        ingresar () {
-          let self = this;
-          axios.post('token/', {username: self.username, password: self.password}).
-          then(response => {
-            console.log(response.data.access);
-            // self.$store.dispatch("guardarToken", respuesta.data.tokenReturn);
-            // self.$router.push({name: 'home'})
+        ...mapActions(['login']),
+     
+          
+          async ingresar () {
+            // this.setOverlay(true)
 
-          }).catch(function (err) {
-            self.errorLogin=null;
-            if (err.response.status ==404){
-              self.errorLogin= 'No existe el usuario o las credenciales son incorrectas';
+            let self = this;
+            const { status, data } = await self.login({ username: self.username, password: self.password })
+            if (status && status === HTTP.SUCCESS.OK) {
+              await self.$router.push({name: 'home'})
             } else {
+              // this.setErrorMessage(data.message)
               self.errorLogin = 'Ocurrio un error con el servidor';
             }
-          })
-        }
-      }
+            // this.setOverlay(false)
+          },
+      
 
+    },
     }
 </script>

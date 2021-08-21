@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Categoria from '../components/Categoria.vue'
 import Login from '../components/Login.vue'
+import axios from 'axios'
+import { HTTP } from '@/utils/constants'
 
 Vue.use(VueRouter)
 
@@ -10,17 +12,20 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: { requiresAuth: true },
   },
   {
     path: '/categoria',
     name: 'categoria',
-    component: Categoria
+    component: Categoria,
+    meta: { requiresAuth: true },
   },
   {
     path: '/login',
     name: 'login',
-    component: Login
+    component: Login,
+    meta: { requiresAuth: false },
   },
   {
     path: '/about',
@@ -37,5 +42,32 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach(async (to, from, next) => {
+  console.log('ok')
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    const token = localStorage.getItem('access')
+    if (token) {
+      try {
+        const validToken = await axios.post('/token/verify/', { token })
+        if (validToken && validToken.status === HTTP.SUCCESS.OK) {
+          next()
+        } else {
+          localStorage.clear()
+          next({name:'login'})
+        }
+      } catch (e) {
+        localStorage.clear()
+        next({name:'login'})
+      }
+    } else {
+      localStorage.clear()
+      next()
+    }
+  } else {
+    next()
+  }
+
+});
 
 export default router
