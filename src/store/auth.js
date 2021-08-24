@@ -1,14 +1,12 @@
-import Vue from 'vue'
 import axios from 'axios'
-import Vuex from 'vuex'
 import router from '../router/index'
 import { HTTP } from '@/utils/constants'
 import AuthService from '../services/auth'
 import jwtDecode from 'jwt-decode'
 
-Vue.use(Vuex)
 
-export default new Vuex.Store({
+
+export default {
   state: {
     access: null,
     user: {},
@@ -37,7 +35,7 @@ export default new Vuex.Store({
 
       const res = await AuthService.login(payload)
       if (res.status && res.status === HTTP.SUCCESS.OK) {
-        axios.defaults.headers.common.Authorization = `Bearer ${res.data.access}`
+        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.access}`
 
         const decode = jwtDecode(res.data.access)
         commit('SET_USER', {
@@ -85,7 +83,5 @@ export default new Vuex.Store({
    
 
 
-  },
-  modules: {
   }
-})
+}

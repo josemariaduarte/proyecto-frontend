@@ -221,18 +221,21 @@ export default {
   },
 
   computed:{
+    // ...mapGetters([
+    //   'autoLogin',
+    // ]),
       logueado(){
-        console.log('logueado')
-        return this.$store.state.access;
+        console.log('ok')
+        return this.$store.state.auth.access;
       },
 
       esAdministrador(){
         return true;
-        return this.$store.state.user && this.$store.state.user.rol == 'Administrador';
+        return this.$store.state.auth.user && this.$store.state.auth.user.rol == 'Administrador';
       },
 
       esFuncionario(){
-        return this.$store.state.user && this.$store.state.user.rol == 'Funcionario';
+        return this.$store.state.auth.user && this.$store.state.auth.user.rol == 'Funcionario';
       },
 
       

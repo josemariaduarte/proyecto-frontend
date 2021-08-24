@@ -29,7 +29,7 @@
     </v-layout>
 </template>
 <script>
-    import { mapActions, mapMutations } from 'vuex'
+    import { mapActions } from 'vuex'
     import { HTTP } from '@/utils/constants'
     export  default {
       name: 'Login',
