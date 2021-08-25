@@ -163,16 +163,11 @@
     },
 
     methods: {
-      ...mapActions(['saveCategoria']),
+      ...mapActions([
+        'saveCategoria',
+        'updateCategoria'
+      ]),
       listar () {
-        // let self = this;
-        // let header ={"Token": this.$store.state.token};
-        // let configuration = {headers: header};
-        // axios.get('productos/categoria').then(function (res) {
-        //   self.categorias = res.data;
-        // }).catch(function (err) {
-        //   console.log(err)
-        // })
         this.getCategoriaListFromService(
           this.pagination.currentPage,
           this.pagination.perPage,
@@ -219,19 +214,30 @@
         let configuration = {headers: header};
         if (this.editedIndex > -1) {
           // codigo para editar
-          axios.put('categoria/update',
-            {
-              '_id': this._id,
-              'nombre': this.nombre,
-              'descripcion': this.descripcion
-            }, configuration)
-            .then(function (response) {
-              self.limpiar();
-              self.close();
-              self.listar();
-            }).catch(function (err) {
+          this.updateCategoria({
+            'id': this._id,
+            'nombre': this.nombre,
+            'descripcion': this.descripcion
+          }).then(res =>{
+            this.limpiar();
+            this.close();
+            this.listar();
+          }).catch(err =>{
             console.log(err);
           });
+          // axios.put('categoria/update',
+          //   {
+          //     '_id': this._id,
+          //     'nombre': this.nombre,
+          //     'descripcion': this.descripcion
+          //   }, configuration)
+          //   .then(function (response) {
+          //     self.limpiar();
+          //     self.close();
+          //     self.listar();
+          //   }).catch(function (err) {
+          //   console.log(err);
+          // });
         } else {
           // codigo para guardar
           this.saveCategoria({
@@ -244,23 +250,12 @@
           }).catch(err =>{
             console.log(err);
           });
-          // axios.post('categoria/add',
-          //   {
-          //     'nombre': this.nombre,
-          //     'descripcion': this.descripcion
-          //   }, configuration)
-          //   .then(function (response) {
-          //     self.limpiar();
-          //     self.close();
-          //     self.listar();
-          //   }).catch(function (err) {
-          //   console.log(err);
-          // });
         }
       },
 
       editItem(item) {
-        this._id = item._id;
+        console.log(item.id);
+        this._id = item.id;
         this.nombre = item.nombre;
         this.descripcion = item.descripcion;
         //

@@ -2,7 +2,6 @@ import axios from 'axios'
 
 export default class CategoriaService {
 
-
   /**
    * Obtiene la lista de todas las revisiones y aprobaciones, solo puede ver el superusuario
    * @param {*} page pagina
@@ -27,6 +26,18 @@ export default class CategoriaService {
    */
   static async saveCategoria (data) {
     return axios.post(`${process.env.VUE_APP_API}productos/categoria/`, data, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+  }
+
+  /**
+   * Modificar una categoria
+   * @param {*} data Categoria a modificar
+   */
+  static async updateCategoria (data) {
+    return axios.put(`${process.env.VUE_APP_API}productos/categoria/${data.id}/`, data, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('access')}`
       }
