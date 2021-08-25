@@ -44,6 +44,32 @@ export default class CategoriaService {
     })
   }
 
+  /**
+   * Activar Categoria
+   * @param {id} data categoria
+   */
+
+  static async activateCategoria (id) {
+    return axios.post(`${process.env.VUE_APP_API}productos/categoria/${id}/activar/`, null, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+  }
+
+  /**
+   * DesaActivar Categoria
+   * @param {id} data categoria
+   */
+
+  static async deactivateCategoria (id) {
+    return axios.post(`${process.env.VUE_APP_API}productos/categoria/${id}/inactivar/`, null,{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+  }
+
 
 
 }

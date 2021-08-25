@@ -32,7 +32,12 @@ export default {
 
     saveCategoria: async (_, categoria) => CategoriaService.saveCategoria(categoria),
 
-    updateCategoria: (_, data) => { return CategoriaService.updateCategoria(data) }
+    updateCategoria: (_, data) => { return CategoriaService.updateCategoria(data) },
+
+    activateCategoria: (_, {id}) => CategoriaService.activateCategoria(id),
+
+    deactivateCategoria: (_, {id}) => CategoriaService.deactivateCategoria(id),
+
 
   },
 

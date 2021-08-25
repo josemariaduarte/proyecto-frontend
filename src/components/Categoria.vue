@@ -165,7 +165,9 @@
     methods: {
       ...mapActions([
         'saveCategoria',
-        'updateCategoria'
+        'updateCategoria',
+        'activateCategoria',
+        'deactivateCategoria'
       ]),
       listar () {
         this.getCategoriaListFromService(
@@ -206,7 +208,6 @@
       },
 
       guardar () {
-        console.log('entrando');
         if (this.validar()){
           return;
         }
@@ -225,19 +226,6 @@
           }).catch(err =>{
             console.log(err);
           });
-          // axios.put('categoria/update',
-          //   {
-          //     '_id': this._id,
-          //     'nombre': this.nombre,
-          //     'descripcion': this.descripcion
-          //   }, configuration)
-          //   .then(function (response) {
-          //     self.limpiar();
-          //     self.close();
-          //     self.listar();
-          //   }).catch(function (err) {
-          //   console.log(err);
-          // });
         } else {
           // codigo para guardar
           this.saveCategoria({
@@ -264,9 +252,10 @@
       },
 
       activarDesactivarMostrar(action, item) {
+        console.log('entrando al msg')
         this.addModal = 1;   // controla para que se muestre el modal
         this.addNombre = item.nombre;
-        this.addId = item._id;
+        this.addId = item.id;
         if (action === 1) {
           this.addAccion = 1;
         } else if (action === 2){
@@ -282,35 +271,44 @@
 
       activar () {
         let self=this;
-        let header ={"Token": this.$store.state.token};
-        let configuration = {headers: header};
-        axios.put('categoria/activate', {'_id': self.addId}, configuration)
-          .then(function (response) {
-            self.addModal=0;
-            self.addAccion=0;
-            self.addNombre='';
-            self.addId='';
-            self.listar();
-          }).catch(function (err) {
+        self.activateCategoria({
+          'id': self.addId
+        }).then(res =>{
+          self.addModal=0;
+          self.addAccion=0;
+          self.addNombre='';
+          self.addId='';
+          self.listar();
+        }).catch(err =>{
           console.log(err);
-        });
+        })
+        // axios.put('categoria/activate', {'_id': self.addId}, configuration)
+        //   .then(function (response) {
+        //     self.addModal=0;
+        //     self.addAccion=0;
+        //     self.addNombre='';
+        //     self.addId='';
+        //     self.listar();
+        //   }).catch(function (err) {
+        //   console.log(err);
+        // });
       },
 
       desactivar () {
         let self=this;
-        let header ={"Token": this.$store.state.token};
-        let configuration = {headers: header};
-        axios.put('categoria/deactivate', {'_id': this.addId }, configuration)
-          .then(function (response) {
-            self.addModal=0;
-            self.addAccion=0;
-            self.addNombre='';
-            self.addId='';
-            self.listar();
-
-          }).catch(function (err) {
+        console.log('id ', self.addId);
+        self.deactivateCategoria({
+          'id': self.addId
+        }).then(res =>{
+          self.addModal=0;
+          self.addAccion=0;
+          self.addNombre='';
+          self.addId='';
+          self.listar();
+        }).catch(err =>{
           console.log(err);
         });
+
       },
 
 
