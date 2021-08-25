@@ -31,6 +31,9 @@ export default {
     setActivo: ({ commit }, activo) => { commit('setActivo', activo) },
 
 
+    saveCategoria: async (_, categoria) => CategoriaService.saveCategoria(categoria),
+
+
   },
 
   getters: {

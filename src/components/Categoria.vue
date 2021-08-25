@@ -85,7 +85,7 @@
                     </v-icon>
                 </template>
 
-                <template v-slot:item.estado="{ item }">
+                <template v-slot:item.activo="{ item }">
 
                     <div v-if="item.activo">
                         <span class="blue--text">Activo</span>
@@ -121,7 +121,7 @@
           {text: 'Opciones', value: 'opciones', sortable: false},
           {text: 'Nombre', value: 'nombre', sortable: true},
           {text: 'Descripcion', value: 'descripcion', sortable: true},
-          {text: 'Estado', value: 'estado', sortable: false},
+          {text: 'Estado', value: 'activo', sortable: false},
         ],
         editedIndex: -1,
         _id: '',
@@ -141,7 +141,7 @@
         'getCategoriaListFromService'
       ]),
       formTitle() {
-        return this.editedIndex === -1 ? 'Nuevo Registro' : 'Editar Registro'
+        return this.editedIndex === -1 ? 'Nueva Categoria' : 'Editar Categoria'
       },
 
       actionTitle() {
@@ -163,6 +163,7 @@
     },
 
     methods: {
+      ...mapActions(['saveCategoria']),
       listar () {
         // let self = this;
         // let header ={"Token": this.$store.state.token};
@@ -210,13 +211,13 @@
       },
 
       guardar () {
-        let self = this;
+        console.log('entrando');
         if (this.validar()){
           return;
         }
         let header ={"Token": this.$store.state.token};
         let configuration = {headers: header};
-        if (self.editedIndex > -1) {
+        if (this.editedIndex > -1) {
           // codigo para editar
           axios.put('categoria/update',
             {
@@ -233,18 +234,28 @@
           });
         } else {
           // codigo para guardar
-          axios.post('categoria/add',
-            {
-              'nombre': this.nombre,
-              'descripcion': this.descripcion
-            }, configuration)
-            .then(function (response) {
-              self.limpiar();
-              self.close();
-              self.listar();
-            }).catch(function (err) {
+          this.saveCategoria({
+            'nombre': this.nombre,
+            'descripcion': this.descripcion
+          }).then(res =>{
+            this.limpiar();
+            this.close();
+            this.listar();
+          }).catch(err =>{
             console.log(err);
           });
+          // axios.post('categoria/add',
+          //   {
+          //     'nombre': this.nombre,
+          //     'descripcion': this.descripcion
+          //   }, configuration)
+          //   .then(function (response) {
+          //     self.limpiar();
+          //     self.close();
+          //     self.listar();
+          //   }).catch(function (err) {
+          //   console.log(err);
+          // });
         }
       },
 

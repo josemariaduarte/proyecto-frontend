@@ -21,4 +21,18 @@ export default class CategoriaService {
   }
 
 
+  /**
+   * Registra una nueva categoria
+   * @param {*} data Categoria a guardar
+   */
+  static async saveCategoria (data) {
+    return axios.post(`${process.env.VUE_APP_API}productos/categoria/`, data, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+  }
+
+
+
 }
