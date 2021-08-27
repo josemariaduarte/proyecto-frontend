@@ -50,7 +50,6 @@ export default {
     getCategoriaList: state => state.categoriaList,
 
     getCategoriaListFromService: () => async (page, page_size) => {
-      console.log('al service');
       if (localStorage.getItem('access')) {
         return CategoriaService.getCategoriaListService(page, page_size)
           .then(res => res)

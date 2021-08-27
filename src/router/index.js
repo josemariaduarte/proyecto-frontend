@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Categoria from '../components/Categoria.vue'
+import SubCategoria from '../components/SubCategoria.vue'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -19,6 +20,12 @@ const routes = [
     path: '/categoria',
     name: 'categoria',
     component: Categoria,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/sub-categoria',
+    name: 'sub-categoria',
+    component: SubCategoria,
     meta: { requiresAuth: true },
   },
   {

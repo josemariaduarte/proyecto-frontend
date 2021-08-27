@@ -2,7 +2,7 @@
     <v-layout >
         <v-flex>
             <v-toolbar flat color="white">
-                <v-toolbar-title>Categorías</v-toolbar-title>
+                <v-toolbar-title>Sub Categorías</v-toolbar-title>
                 <v-divider class="mx-2" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-text-field class="text-xs-center" v-model="search" append-icon="search"
@@ -21,11 +21,20 @@
                             <v-container grid-list-md>
                                 <v-layout wrap>
                                     <v-flex xs12 sm12 md12>
+                                        <v-select v-model="categoria"
+                                                  :items="categorias"
+                                                  item-text="text"
+                                                  item-value="value"
+                                                  label="Categoria">
+                                        </v-select>
+                                    </v-flex>
+                                    <v-flex xs12 sm12 md12>
                                         <v-text-field v-model="nombre" label="Nombre"></v-text-field>
                                     </v-flex>
                                     <v-flex xs12 sm12 md12>
                                         <v-text-field v-model="descripcion" label="Descripcion"></v-text-field>
                                     </v-flex>
+
                                     <v-flex xs12 sm12 md12>
                                         <div class="red--text" v-for="v in validarMensaje" :key="v" v-text="v">
                                         </div>
@@ -70,7 +79,7 @@
             </v-toolbar>
             <v-data-table
                     :headers="headers"
-                    :items="categorias"
+                    :items="subCategorias"
                     :search="search"
                     class="elevation-1">
                 <template v-slot:item.opciones="{ item }">
@@ -116,17 +125,20 @@
         },
         dialog: false,
         search: '',
+        subCategorias: [],
         categorias: [],
         headers: [
           {text: 'Opciones', value: 'opciones', sortable: false},
           {text: 'Nombre', value: 'nombre', sortable: true},
           {text: 'Descripcion', value: 'descripcion', sortable: true},
+          {text: 'Categoria', value: 'category_name', sortable: true},
           {text: 'Estado', value: 'activo', sortable: false},
         ],
         editedIndex: -1,
         _id: '',
         nombre: '',
         descripcion: '',
+        categoria: '',
         valida: 0,
         validarMensaje: [],
         addModal:0,
@@ -138,7 +150,8 @@
 
     computed: {
       ...mapGetters([
-        'getCategoriaListFromService'
+        'getCategoriaListFromService',
+        'getSubCategoriaListFromService'
       ]),
       formTitle() {
         return this.editedIndex === -1 ? 'Nueva Categoria' : 'Editar Categoria'
@@ -159,30 +172,49 @@
     },
 
     created() {
-      this.listar()
+      this.listar();
+      this.listarCategorias();
     },
 
     methods: {
       ...mapActions([
-        'saveCategoria',
-        'updateCategoria',
-        'activateCategoria',
-        'deactivateCategoria'
+        'saveSubCategoria',
+        'updateSubCategoria',
+        'activateSubCategoria',
+        'deactivateSubCategoria'
       ]),
+
       listar () {
-        this.getCategoriaListFromService(
+        this.getSubCategoriaListFromService(
           this.pagination.currentPage,
           this.pagination.perPage,
 
         ).then(res => {
-          this.categorias = Object.assign([], res.data.results)
+          this.subCategorias = Object.assign([], res.data.results)
+        })
+      },
+
+      listarCategorias (){
+        // obtener en el selector las categorias.
+        let self = this;
+        let categoriaArray = [];
+        self.getCategoriaListFromService(
+          self.pagination.currentPage,
+          self.pagination.perPage,
+        ).then(res => {
+          categoriaArray = res.data.results;
+          categoriaArray.map(function(resp){
+            self.categorias.push({text: resp.nombre, value:resp.id});
+          })
         })
       },
 
       limpiar () {
+        console.log('limpiando')
         // limpiamos los atributos del formulario
         this._id='';
         this.nombre='';
+        this.categoria = null;
         this.descripcion='';
         // limpiamos los elementos de validacion
         this.valida=0;
@@ -192,6 +224,7 @@
       },
 
       validar () {
+        console.log('validacion');
         this.valida = 0;
         this.validarMensaje = [];
         if (this.nombre.length <1 || this.nombre.length > 50) {
@@ -199,6 +232,9 @@
         }
         if (this.descripcion.length > 255) {
           this.validarMensaje.push('La descripcion de la Categoria no debe tener mas de 250 caracteres')
+        }
+        if (this.categoria === "" ) {
+          this.validarMensaje.push('Categoria es obligatorio')
         }
         //
         if (this.validarMensaje.length) {
@@ -208,17 +244,17 @@
       },
 
       guardar () {
+        console.log('entrando')
         if (this.validar()){
           return;
         }
-        let header ={"Token": this.$store.state.token};
-        let configuration = {headers: header};
         if (this.editedIndex > -1) {
           // codigo para editar
-          this.updateCategoria({
+          this.updateSubCategoria({
             'id': this._id,
             'nombre': this.nombre,
-            'descripcion': this.descripcion
+            'descripcion': this.descripcion,
+            'categoria_producto': this.categoria
           }).then(res =>{
             this.limpiar();
             this.close();
@@ -228,9 +264,10 @@
           });
         } else {
           // codigo para guardar
-          this.saveCategoria({
+          this.saveSubCategoria({
             'nombre': this.nombre,
-            'descripcion': this.descripcion
+            'descripcion': this.descripcion,
+            'categoria_producto': this.categoria
           }).then(res =>{
             this.limpiar();
             this.close();
@@ -246,6 +283,7 @@
         this._id = item.id;
         this.nombre = item.nombre;
         this.descripcion = item.descripcion;
+        this.categoria = item.categoria_producto;
         //
         this.dialog = true;
         this.editedIndex = 1; // cuando esta variable es 1 significa que es para la edicion
@@ -271,7 +309,7 @@
 
       activar () {
         let self=this;
-        self.activateCategoria({
+        self.activateSubCategoria({
           'id': self.addId
         }).then(res =>{
           self.addModal=0;
@@ -282,12 +320,22 @@
         }).catch(err =>{
           console.log(err);
         })
+        // axios.put('categoria/activate', {'_id': self.addId}, configuration)
+        //   .then(function (response) {
+        //     self.addModal=0;
+        //     self.addAccion=0;
+        //     self.addNombre='';
+        //     self.addId='';
+        //     self.listar();
+        //   }).catch(function (err) {
+        //   console.log(err);
+        // });
       },
 
       desactivar () {
         let self=this;
         console.log('id ', self.addId);
-        self.deactivateCategoria({
+        self.deactivateSubCategoria({
           'id': self.addId
         }).then(res =>{
           self.addModal=0;
