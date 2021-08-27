@@ -210,7 +210,6 @@
       },
 
       limpiar () {
-        console.log('limpiando')
         // limpiamos los atributos del formulario
         this._id='';
         this.nombre='';
@@ -224,7 +223,6 @@
       },
 
       validar () {
-        console.log('validacion');
         this.valida = 0;
         this.validarMensaje = [];
         if (this.nombre.length <1 || this.nombre.length > 50) {
@@ -244,7 +242,6 @@
       },
 
       guardar () {
-        console.log('entrando')
         if (this.validar()){
           return;
         }
@@ -279,7 +276,6 @@
       },
 
       editItem(item) {
-        console.log(item.id);
         this._id = item.id;
         this.nombre = item.nombre;
         this.descripcion = item.descripcion;
@@ -290,7 +286,6 @@
       },
 
       activarDesactivarMostrar(action, item) {
-        console.log('entrando al msg')
         this.addModal = 1;   // controla para que se muestre el modal
         this.addNombre = item.nombre;
         this.addId = item.id;
@@ -320,21 +315,12 @@
         }).catch(err =>{
           console.log(err);
         })
-        // axios.put('categoria/activate', {'_id': self.addId}, configuration)
-        //   .then(function (response) {
-        //     self.addModal=0;
-        //     self.addAccion=0;
-        //     self.addNombre='';
-        //     self.addId='';
-        //     self.listar();
-        //   }).catch(function (err) {
-        //   console.log(err);
-        // });
+
       },
 
       desactivar () {
         let self=this;
-        console.log('id ', self.addId);
+
         self.deactivateSubCategoria({
           'id': self.addId
         }).then(res =>{
