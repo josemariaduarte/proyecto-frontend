@@ -45,31 +45,53 @@ export default {
   actions: {
 
 
-    setNroDoc: ({ commit }, nro_doc) => { commit('setNroDoc', nro_doc) },
+    setNroDoc: ({commit}, nro_doc) => {
+      commit('setNroDoc', nro_doc)
+    },
 
-    setNombres: ({ commit }, nombres) => { commit('setNombres', nombres) },
+    setNombres: ({commit}, nombres) => {
+      commit('setNombres', nombres)
+    },
 
-    setApellidos: ({ commit }, apellidos) => { commit('setApellidos', apellidos) },
+    setApellidos: ({commit}, apellidos) => {
+      commit('setApellidos', apellidos)
+    },
 
-    setFechaNacimiento: ({ commit }, fecha_nacimiento) => { commit('setFechaNacimiento', fecha_nacimiento) },
-
-
-    setTelefono: ({ commit }, telefono) => { commit('setTelefono', telefono) },
-
-    setSexo: ({ commit }, sexo) => { commit('setSexo', sexo) },
-
-    setDireccion: ({ commit }, direccion) => { commit('setDireccion', direccion) },
-
-    setEstadoCivil: ({ commit }, estado_civil) => { commit('setEstadoCivil', estado_civil) },
-
-    setCorreo: ({ commit }, correo) => { commit('setCorreo', correo) },
+    setFechaNacimiento: ({commit}, fecha_nacimiento) => {
+      commit('setFechaNacimiento', fecha_nacimiento)
+    },
 
 
-    setActivo: ({ commit }, activo) => { commit('setActivo', activo) },
+    setTelefono: ({commit}, telefono) => {
+      commit('setTelefono', telefono)
+    },
 
-    saveCliente: async (_, proveedor) => ClienteService.saveCliente(proveedor),
+    setSexo: ({commit}, sexo) => {
+      commit('setSexo', sexo)
+    },
 
-    updateCliente: (_, data) => { return ClienteService.updateCliente(data) },
+    setDireccion: ({commit}, direccion) => {
+      commit('setDireccion', direccion)
+    },
+
+    setEstadoCivil: ({commit}, estado_civil) => {
+      commit('setEstadoCivil', estado_civil)
+    },
+
+    setCorreo: ({commit}, correo) => {
+      commit('setCorreo', correo)
+    },
+
+
+    setActivo: ({commit}, activo) => {
+      commit('setActivo', activo)
+    },
+
+    saveCliente: async (_, cliente) => ClienteService.saveCliente(cliente),
+
+    updateCliente: (_, data) => {
+      return ClienteService.updateCliente(data)
+    },
 
     activateCliente: (_, {id}) => ClienteService.activateCliente(id),
 
@@ -86,6 +108,23 @@ export default {
     getClienteListFromService: () => async (page, page_size) => {
       if (localStorage.getItem('access')) {
         return ClienteService.getClienteListService(page, page_size)
+          .then(res => res)
+          .catch(err => err)
+      }
+    },
+
+    getSexoListFromService: () => async () => {
+      if (localStorage.getItem('access')) {
+        return ClienteService.getSexoListService()
+          .then(res => res)
+          .catch(err => err)
+      }
+    },
+
+
+    getEstadoCivilListFromService: () => async () => {
+      if (localStorage.getItem('access')) {
+        return ClienteService.getEstadoCivilListService()
           .then(res => res)
           .catch(err => err)
       }

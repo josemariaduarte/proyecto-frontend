@@ -71,5 +71,32 @@ export default class ClienteService {
   }
 
 
+  /**
+   * Listado de Sexo Choices del backend
+   */
+  static async getSexoListService () {
+    let string = `${process.env.VUE_APP_API}personas/sexo_choices/`
+
+    return axios.get(string, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+
+  }
+
+
+  static async getEstadoCivilListService () {
+    let string = `${process.env.VUE_APP_API}personas/estado_civil_choices/`
+
+    return axios.get(string, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+
+  }
+
+
 
 }

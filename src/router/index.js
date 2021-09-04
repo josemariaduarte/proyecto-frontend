@@ -5,6 +5,7 @@ import Categoria from '../components/Categoria.vue'
 import SubCategoria from '../components/SubCategoria.vue'
 import Proveedor from '../components/Proveedor'
 import Cliente from '../components/Cliente'
+import ClienteForm from '../components/ClienteForm'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -34,6 +35,12 @@ const routes = [
     path: '/cliente',
     name: 'cliente',
     component: Cliente,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/cliente/crear/',
+    name: 'cliente_form',
+    component: ClienteForm,
     meta: { requiresAuth: true },
   },
   {
