@@ -116,9 +116,7 @@
       ...mapGetters([
         'getClienteListFromService'
       ]),
-      formTitle() {
-        return this.editedIndex === -1 ? 'Nuevo Cliente' : 'Editar Cliente'
-      },
+
 
       actionTitle() {
         return this.addAccion === 1 ? 'Activar Item' : 'Desactivar Item'
@@ -140,10 +138,8 @@
 
     methods: {
       ...mapActions([
-        'saveProveedor',
-        'updateProveedor',
-        'activateProveedor',
-        'deactivateProveedor'
+        'activateCliente',
+        'deactivateCliente'
       ]),
       listar () {
         this.getClienteListFromService(
@@ -174,74 +170,12 @@
         this.editedIndex = -1;
       },
 
-      validar () {
-        this.valida = 0;
-        this.validarMensaje = [];
-        if (this.razon_social.length <1 || this.razon_social.length >100) {
-          this.validarMensaje.push('Razon social debe tener entre 1-100 caracteres')
-        }
-        if (this.ruc.length <1 || this.ruc.length > 20) {
-          this.validarMensaje.push('RUC debe tener entre 1-20 caracteres')
-        }
-        if (this.direccion.length <1 || this.direccion.length > 100) {
-          this.validarMensaje.push('Dirección debe tener entre 1-100 caracteres')
-        }
-        //
-        if (this.validarMensaje.length) {
-          this.valida = 1;
-        }
-        return this.valida;
-      },
 
-      guardar () {
-        if (this.validar()){
-          return;
-        }
 
-        if (this.editedIndex > -1) {
-          // codigo para editar
-          this.updateProveedor({
-            'id': this._id,
-            'razon_social': this.razon_social,
-            'direccion': this.direccion,
-            'ruc': this.ruc
-          }).then(res =>{
-            this.limpiar();
-            this.close();
-            this.listar();
-          }).catch(err =>{
-            console.log(err);
-          });
-        } else {
-          // codigo para guardar
-          this.saveProveedor({
-            'razon_social': this.razon_social,
-            'direccion': this.direccion,
-            'ruc': this.ruc
-          }).then(res =>{
-            this.limpiar();
-            this.close();
-            this.listar();
-          }).catch(err =>{
-            console.log(err);
-          });
-        }
-      },
-
-      editItem(item) {
-        console.log(item.id);
-        this._id = item.id;
-        this.razon_social = item.razon_social;
-        this.direccion = item.direccion;
-        this.ruc = item.ruc;
-        //
-        this.dialog = true;
-        this.editedIndex = 1; // cuando esta variable es 1 significa que es para la edicion
-      },
 
       activarDesactivarMostrar(action, item) {
         this.addModal = 1;   // controla para que se muestre el modal
-        this.addNombre = item.razon_social;
+        this.addNombre = item.nombres + ' ' + item.apellidos;
         this.addId = item.id;
         if (action === 1) {
           this.addAccion = 1;
@@ -258,7 +192,7 @@
 
       activar () {
         let self=this;
-        self.activateProveedor({
+        self.activateCliente({
           'id': self.addId
         }).then(res =>{
           self.addModal=0;
@@ -273,7 +207,7 @@
 
       desactivar () {
         let self=this;
-        self.deactivateProveedor({
+        self.deactivateCliente({
           'id': self.addId
         }).then(res =>{
           self.addModal=0;
