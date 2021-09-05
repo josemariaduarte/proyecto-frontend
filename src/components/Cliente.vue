@@ -46,9 +46,9 @@
                     :search="search"
                     class="elevation-1">
                 <template v-slot:item.opciones="{ item }">
-<!--                    <v-icon small class="mr-2" @click="editItem(item)">-->
-<!--                        edit-->
-<!--                    </v-icon>-->
+                    <v-icon small class="mr-2" @click="editItem(item)">
+                        edit
+                    </v-icon>
                     <v-icon v-if="item.activo" small class="mr-2" @click="activarDesactivarMostrar(2, item)">
                         block
                     </v-icon>
@@ -152,6 +152,13 @@
       },
 
 
+      editItem(item) {
+        // permite redirigir a la vista de edicion
+        this.$router.push({ path: `/cliente/${item.id}`}, () => {})
+
+      },
+
+
 
       redirectToAddView () {
         this.$router.push({ name: 'cliente_form'})
@@ -169,9 +176,6 @@
         //
         this.editedIndex = -1;
       },
-
-
-
 
       activarDesactivarMostrar(action, item) {
         this.addModal = 1;   // controla para que se muestre el modal

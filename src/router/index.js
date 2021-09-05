@@ -44,6 +44,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/cliente/:id',
+    name: 'cliente_update',
+    component: ClienteForm,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/sub-categoria',
     name: 'sub-categoria',
     component: SubCategoria,

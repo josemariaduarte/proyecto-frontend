@@ -131,6 +131,16 @@ export default {
     },
 
 
+    getClienteDetailFromService: () => async (id) => {
+      if (localStorage.getItem('access')) {
+        return ClienteService.getClienteDetailService(id)
+          .then(res => res)
+          .catch(err => err)
+      }
+    },
+
+
+
 
   }
 }

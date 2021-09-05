@@ -97,6 +97,22 @@ export default class ClienteService {
 
   }
 
+  /**
+   * Detalle de un cliente
+   *  @param {id} cliente id
+   */
+  static async getClienteDetailService (id) {
+    let string = `${process.env.VUE_APP_API}personas/cliente/${id}`
+
+
+    return axios.get(string, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+
+  }
+
 
 
 }

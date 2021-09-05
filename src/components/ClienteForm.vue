@@ -4,7 +4,7 @@
 
             <v-card>
                 <v-card-title>
-                    <span class="headline">Nuevo Cliente</span>
+                    <span class="headline">{{ formTitle }}</span>
                 </v-card-title>
                 <v-card-text>
                     <v-container grid-list-md>
@@ -114,6 +114,7 @@
   export default {
     name: "ClienteForm",
     data: () => ({
+      editedIndex: 1,
       fromDateMenu: false,
       fromDateVal: null,
       valid: true,
@@ -159,24 +160,36 @@
     computed: {
       ...mapGetters([
         'getSexoListFromService',
-        'getEstadoCivilListFromService'
+        'getEstadoCivilListFromService',
+        'getClienteDetailFromService'
       ]),
       fromDateDisp() {
         return this.fecha_nacimiento;
         // format date, apply validations, etc. Example below.
         // return this.fromDateVal ? this.formatDate(this.fromDateVal) : "";
       },
+
+      formTitle() {
+        return this.editedIndex === 1 ? 'Nuevo Cliente' : 'Editar Cliente'
+      },
     },
 
     created() {
+      console.log('cliente form');
       this.listarSexo();
       this.listarEstadoCivil();
+      if (this.$route.name === 'cliente_update') {
+        // cuando es edicion seteamos editar el editedIndex a 2
+        this.editedIndex = 2;
+        this.getClienteDetail(this.$route.params.id);
+      }
     },
 
 
     methods: {
       ...mapActions([
-        'saveCliente'
+        'saveCliente',
+        'updateCliente'
       ]),
       validate() {
         this.$refs.form.validate()
@@ -216,22 +229,58 @@
         this.$router.push({ name: 'cliente'})
       },
 
+
+      getClienteDetail (id) {
+        this.getClienteDetailFromService(id).then(res => {
+          this.nro_doc = res.data.nro_doc;
+          this.nombres = res.data.nombres;
+          this.apellidos = res.data.apellidos;
+          this.direccion = res.data.direccion;
+          this.telefono = res.data.telefono;
+          this.correo = res.data.correo;
+          this.sexo = res.data.sexo;
+          this.estado_civil = res.data.estado_civil;
+          this.fecha_nacimiento = res.data.fecha_nacimiento;
+        })
+      },
+
       guardar(){
-        this.saveCliente({
-          'nro_doc': this.nro_doc,
-          'nombres': this.nombres,
-          'apellidos': this.apellidos,
-          'direccion': this.direccion,
-          'telefono': this.telefono,
-          'fecha_nacimiento': this.fecha_nacimiento,
-          'correo': this.correo,
-          'sexo': this.sexo,
-          'estado_civil': this.estado_civil
-        }).then(res =>{
-          this.$router.push({ name: 'cliente'})
-        }).catch(err =>{
-          console.log(err);
-        });
+        if (this.editedIndex == 2) {
+          this.updateCliente({
+            'id': this.$route.params.id,
+            'nro_doc': this.nro_doc,
+            'nombres': this.nombres,
+            'apellidos': this.apellidos,
+            'direccion': this.direccion,
+            'telefono': this.telefono,
+            'fecha_nacimiento': this.fecha_nacimiento,
+            'correo': this.correo,
+            'sexo': this.sexo,
+            'estado_civil': this.estado_civil
+          }).then(res =>{
+            this.$router.push({ name: 'cliente'})
+          }).catch(err =>{
+            console.log(err);
+          });
+
+        } else {
+          this.saveCliente({
+            'nro_doc': this.nro_doc,
+            'nombres': this.nombres,
+            'apellidos': this.apellidos,
+            'direccion': this.direccion,
+            'telefono': this.telefono,
+            'fecha_nacimiento': this.fecha_nacimiento,
+            'correo': this.correo,
+            'sexo': this.sexo,
+            'estado_civil': this.estado_civil
+          }).then(res =>{
+            this.$router.push({ name: 'cliente'})
+          }).catch(err =>{
+            console.log(err);
+          });
+        }
+
       }
 
     },
