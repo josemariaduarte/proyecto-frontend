@@ -7,6 +7,7 @@ import Proveedor from '../components/Proveedor'
 import Cliente from '../components/Cliente'
 import ClienteForm from '../components/ClienteForm'
 import Deposito from '../components/Deposito'
+import UnidadMedida from '../components/UnidadMedida'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -36,6 +37,12 @@ const routes = [
     path: '/deposito',
     name: 'deposito',
     component: Deposito,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/unidad_medidad',
+    name: 'unidad',
+    component: UnidadMedida,
     meta: { requiresAuth: true },
   },
   {

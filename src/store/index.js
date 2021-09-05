@@ -6,6 +6,7 @@ import subCategoria from './sub-categoria'
 import Proveedor from './proveedor'
 import Cliente from './cliente'
 import Deposito from './deposito'
+import UnidadMedida from './unidad-medida'
 
 // export default auth
 
@@ -18,7 +19,8 @@ const store = new Vuex.Store({
     subCategoria,
     Proveedor,
     Cliente,
-    Deposito
+    Deposito,
+    UnidadMedida
   },
 });
 
