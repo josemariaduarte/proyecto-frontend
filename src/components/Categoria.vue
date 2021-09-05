@@ -252,7 +252,6 @@
       },
 
       activarDesactivarMostrar(action, item) {
-        console.log('entrando al msg')
         this.addModal = 1;   // controla para que se muestre el modal
         this.addNombre = item.nombre;
         this.addId = item.id;

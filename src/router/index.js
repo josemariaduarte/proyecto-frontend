@@ -8,6 +8,8 @@ import Cliente from '../components/Cliente'
 import ClienteForm from '../components/ClienteForm'
 import Deposito from '../components/Deposito'
 import UnidadMedida from '../components/UnidadMedida'
+import Articulo from '../components/Articulo'
+import ArticuloForm from '../components/ArticuloForm'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -61,6 +63,24 @@ const routes = [
     path: '/cliente/:id',
     name: 'cliente_update',
     component: ClienteForm,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/articulo',
+    name: 'articulo',
+    component: Articulo,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/articulo/crear/',
+    name: 'articulo_form',
+    component: ArticuloForm,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/articulo/:id',
+    name: 'articulo_update',
+    component: ArticuloForm,
     meta: { requiresAuth: true },
   },
   {

@@ -2,7 +2,7 @@
     <v-layout >
         <v-flex>
             <v-toolbar flat color="white">
-                <v-toolbar-title>Unidad de Medida</v-toolbar-title>
+                <v-toolbar-title>Articulos</v-toolbar-title>
                 <v-divider class="mx-2" inset vertical></v-divider>
                 <v-spacer></v-spacer>
                 <v-text-field class="text-xs-center" v-model="search" append-icon="search"
@@ -10,36 +10,9 @@
                 <v-spacer></v-spacer>
                 <v-dialog v-model="dialog" max-width="500px">
                     <template v-slot:activator="{ on }">
-                        <v-btn color="primary" dark class="mb-2" v-on="on">Nuevo</v-btn>
+                        <v-btn color="primary" dark class="mb-2" @click.native="redirectToAddView()">Nuevo</v-btn>
                     </template>
-                    <v-card>
-                        <v-card-title>
-                            <span class="headline">{{ formTitle }}</span>
-                        </v-card-title>
 
-                        <v-card-text>
-                            <v-container grid-list-md>
-                                <v-layout wrap>
-                                    <v-flex xs12 sm12 md12>
-                                        <v-text-field v-model="nombre" label="Nombre"></v-text-field>
-                                    </v-flex>
-                                    <v-flex xs12 sm12 md12>
-                                        <v-text-field v-model="descripcion" label="Descripcion"></v-text-field>
-                                    </v-flex>
-                                    <v-flex xs12 sm12 md12>
-                                        <div class="red--text" v-for="v in validarMensaje" :key="v" v-text="v">
-                                        </div>
-                                    </v-flex>
-                                </v-layout>
-                            </v-container>
-                        </v-card-text>
-
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="red darken-1" text @click="close">Cancelar</v-btn>
-                            <v-btn color="blue darken-1" text @click="guardar">Guardar</v-btn>
-                        </v-card-actions>
-                    </v-card>
                 </v-dialog>
 
                 <v-dialog
@@ -70,30 +43,17 @@
             </v-toolbar>
             <v-data-table
                     :headers="headers"
-                    :items="categorias"
+                    :items="articulos"
                     :search="search"
                     class="elevation-1">
                 <template v-slot:item.opciones="{ item }">
                     <v-icon small class="mr-2" @click="editItem(item)">
                         edit
                     </v-icon>
-                    <v-icon v-if="item.activo" small class="mr-2" @click="activarDesactivarMostrar(2, item)">
-                        block
-                    </v-icon>
-                    <v-icon v-if="!item.activo" small class="mr-2" @click="activarDesactivarMostrar(1, item)">
-                        check
-                    </v-icon>
+
                 </template>
 
-                <template v-slot:item.activo="{ item }">
 
-                    <div v-if="item.activo">
-                        <span class="blue--text">Activo</span>
-                    </div>
-                    <div v-else>
-                        <span class="red--text">Inactivo</span>
-                    </div>
-                </template>
 
                 <template v-slot:no-data>
                     <v-btn color="primary" @click="listar">Resetear</v-btn>
@@ -116,12 +76,12 @@
         },
         dialog: false,
         search: '',
-        categorias: [],
+        articulos: [],
         headers: [
           {text: 'Opciones', value: 'opciones', sortable: false},
           {text: 'Nombre', value: 'nombre', sortable: true},
-          {text: 'Descripcion', value: 'descripcion', sortable: true},
-          {text: 'Estado', value: 'activo', sortable: false},
+          {text: 'Precio Venta', value: 'precio_venta', sortable: true},
+          {text: 'Cantidad', value: 'cantidad', sortable: true},
         ],
         editedIndex: -1,
         _id: '',
@@ -138,7 +98,7 @@
 
     computed: {
       ...mapGetters([
-        'getUnidadMedidaListFromService'
+        'getArticuloListFromService'
       ]),
       formTitle() {
         return this.editedIndex === -1 ? 'Nueva Categoria' : 'Editar Categoria'
@@ -164,19 +124,22 @@
 
     methods: {
       ...mapActions([
-        'saveUnidadMedida',
-        'updateUnidadMedida',
-        'activateUnidadMedida',
-        'deactivateUnidadMedida'
+        'saveCategoria',
+        'updateCategoria',
+        'activateCategoria',
+        'deactivateCategoria'
       ]),
       listar () {
-        this.getUnidadMedidaListFromService(
-          this.pagination.currentPage,
-          this.pagination.perPage,
-
+        this.getArticuloListFromService(
+          1,
+          100,
         ).then(res => {
-          this.categorias = Object.assign([], res.data.results)
+          this.articulos = Object.assign([], res.data.results)
         })
+      },
+
+      redirectToAddView () {
+        this.$router.push({ name: 'articulo_form'})
       },
 
       limpiar () {
@@ -194,11 +157,11 @@
       validar () {
         this.valida = 0;
         this.validarMensaje = [];
-        if (this.nombre.length <1 || this.nombre.length > 100) {
-          this.validarMensaje.push('El nombre debe tener entre 1-100 caracteres')
+        if (this.nombre.length <1 || this.nombre.length > 50) {
+          this.validarMensaje.push('El nombre de la Categoria debe tener entre 1-50 caracteres')
         }
-        if (this.descripcion.length > 150) {
-          this.validarMensaje.push('La descripcion  no debe tener mas de 150 caracteres')
+        if (this.descripcion.length > 255) {
+          this.validarMensaje.push('La descripcion de la Categoria no debe tener mas de 250 caracteres')
         }
         //
         if (this.validarMensaje.length) {
@@ -211,9 +174,11 @@
         if (this.validar()){
           return;
         }
+        let header ={"Token": this.$store.state.token};
+        let configuration = {headers: header};
         if (this.editedIndex > -1) {
           // codigo para editar
-          this.updateUnidadMedida({
+          this.updateCategoria({
             'id': this._id,
             'nombre': this.nombre,
             'descripcion': this.descripcion
@@ -226,7 +191,7 @@
           });
         } else {
           // codigo para guardar
-          this.saveUnidadMedida({
+          this.saveCategoria({
             'nombre': this.nombre,
             'descripcion': this.descripcion
           }).then(res =>{
@@ -240,13 +205,9 @@
       },
 
       editItem(item) {
-        console.log(item.id);
-        this._id = item.id;
-        this.nombre = item.nombre;
-        this.descripcion = item.descripcion;
-        //
-        this.dialog = true;
-        this.editedIndex = 1; // cuando esta variable es 1 significa que es para la edicion
+        // permite redirigir a la vista de edicion
+        this.$router.push({ path: `/articulo/${item.id}`}, () => {})
+
       },
 
       activarDesactivarMostrar(action, item) {
@@ -268,7 +229,7 @@
 
       activar () {
         let self=this;
-        self.activateUnidadMedida({
+        self.activateCategoria({
           'id': self.addId
         }).then(res =>{
           self.addModal=0;
@@ -284,7 +245,7 @@
       desactivar () {
         let self=this;
         console.log('id ', self.addId);
-        self.deactivateUnidadMedida({
+        self.deactivateCategoria({
           'id': self.addId
         }).then(res =>{
           self.addModal=0;
