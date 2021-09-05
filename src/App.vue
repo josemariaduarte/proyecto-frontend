@@ -46,6 +46,16 @@
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item :to="{name: 'deposito'}">
+              <v-list-item-action>
+                <v-icon>table_chart</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Depósitos
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-list-item :to="{name: 'proveedor'}">
               <v-list-item-action>
                 <v-icon>table_chart</v-icon>

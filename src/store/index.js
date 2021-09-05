@@ -5,6 +5,7 @@ import categoria from "./categoria";
 import subCategoria from './sub-categoria'
 import Proveedor from './proveedor'
 import Cliente from './cliente'
+import Deposito from './deposito'
 
 // export default auth
 
@@ -16,7 +17,8 @@ const store = new Vuex.Store({
     categoria,
     subCategoria,
     Proveedor,
-    Cliente
+    Cliente,
+    Deposito
   },
 });
 

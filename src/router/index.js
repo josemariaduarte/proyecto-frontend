@@ -6,6 +6,7 @@ import SubCategoria from '../components/SubCategoria.vue'
 import Proveedor from '../components/Proveedor'
 import Cliente from '../components/Cliente'
 import ClienteForm from '../components/ClienteForm'
+import Deposito from '../components/Deposito'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -29,6 +30,12 @@ const routes = [
     path: '/proveedor',
     name: 'proveedor',
     component: Proveedor,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/deposito',
+    name: 'deposito',
+    component: Deposito,
     meta: { requiresAuth: true },
   },
   {
