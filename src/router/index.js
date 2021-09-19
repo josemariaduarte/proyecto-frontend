@@ -10,6 +10,8 @@ import Deposito from '../components/Deposito'
 import UnidadMedida from '../components/UnidadMedida'
 import Articulo from '../components/Articulo'
 import ArticuloForm from '../components/ArticuloForm'
+import OrdenCompraList from '../components/Compra/OrdenCompraList'
+import OrdenCompraForm from '../components/Compra/OrdenCompraForm'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -87,6 +89,24 @@ const routes = [
     path: '/sub-categoria',
     name: 'sub-categoria',
     component: SubCategoria,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/orden_compra',
+    name: 'orden_compra',
+    component: OrdenCompraList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/orden_compra/crear',
+    name: 'orden_compra_create',
+    component: OrdenCompraForm,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/orden_compra/:id',
+    name: 'orden_compra_update',
+    component: OrdenCompraForm,
     meta: { requiresAuth: true },
   },
   {

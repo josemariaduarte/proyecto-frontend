@@ -174,8 +174,6 @@
         if (this.validar()){
           return;
         }
-        let header ={"Token": this.$store.state.token};
-        let configuration = {headers: header};
         if (this.editedIndex > -1) {
           // codigo para editar
           this.updateCategoria({
