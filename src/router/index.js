@@ -12,6 +12,8 @@ import Articulo from '../components/Articulo'
 import ArticuloForm from '../components/ArticuloForm'
 import OrdenCompraList from '../components/Compra/OrdenCompraList'
 import OrdenCompraForm from '../components/Compra/OrdenCompraForm'
+import CompraList from '../components/Compra/CompraList'
+import CompraForm from '../components/Compra/CompraForm'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -107,6 +109,18 @@ const routes = [
     path: '/orden_compra/:id',
     name: 'orden_compra_update',
     component: OrdenCompraForm,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/compra',
+    name: 'compra',
+    component: CompraList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/compra/crear',
+    name: 'compra_create',
+    component: CompraForm,
     meta: { requiresAuth: true },
   },
   {

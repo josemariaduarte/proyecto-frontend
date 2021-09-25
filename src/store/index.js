@@ -9,6 +9,7 @@ import Deposito from './deposito'
 import UnidadMedida from './unidad-medida'
 import Articulo from './articulo'
 import OrdenCompra from './orden-compra'
+import Compra from './compra'
 
 // export default auth
 
@@ -24,7 +25,8 @@ const store = new Vuex.Store({
     Deposito,
     UnidadMedida,
     Articulo,
-    OrdenCompra
+    OrdenCompra,
+    Compra
   },
 });
 
