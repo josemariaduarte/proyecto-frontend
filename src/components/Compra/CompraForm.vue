@@ -1,10 +1,17 @@
 <template>
     <v-layout >
         <v-flex>
-
+            <v-alert v-if="viewMessageForm"
+                    border="right"
+                    color="red lighten-2"
+                    dark
+            >
+                <div v-for="v in validateMensaje" :key="v" v-text="v">
+                </div>
+            </v-alert>
             <v-card>
                 <v-card-title>
-                    <span class="headline">Crear Compra</span>
+                    <span class="headline">{{formTitle}}</span>
                 </v-card-title>
                 <v-card-text>
                     <v-container grid-list-md>
@@ -14,6 +21,7 @@
                                           :items="tipoComprobanteOpciones"
                                           item-text="text"
                                           item-value="value"
+                                          :rules="tipoComprobanteRules"
                                           label="Tipo Comprobante">
                                 </v-select>
                             </v-flex>
@@ -105,6 +113,17 @@
                                     </v-data-table>
                                 </template>
                             </v-flex>
+                            <v-flex xs12 sm12 md12 lg12 xl12>
+                                <v-flex class="text-xs-right">
+                                    <strong> Total Parcial:{{ totalParcial=calcularTotalParcial}}</strong>
+                                </v-flex>
+                                <v-flex class="text-xl-end">
+                                    <strong> Total Impuesto:{{ totalImpuesto=calcularTotalImpuesto }}</strong>
+                                </v-flex>
+                                <v-flex class="text-xs-left">
+                                    <strong> Total Neto:{{ total=calcularTotal }}</strong>
+                                </v-flex>
+                            </v-flex>
 
 
                             <!--                            <v-flex xs12 sm12 md12>-->
@@ -140,6 +159,8 @@
                                         <v-flex xs12 sm6 md6>
                                             <v-text-field type="number" v-model="precio" label="Precio"></v-text-field>
                                         </v-flex>
+
+
 
                                         <v-flex xs12 sm12 md12>
                                             <div class="red--text" v-for="v in validarMensajeDetalle" :key="v" v-text="v">
@@ -181,7 +202,7 @@
       proveedor: '',
       tipo_comprobante: '',
       numero_comprobante: '',
-      impuesto: '',
+      impuesto: {'text': '10%', value: 10},
       proveedorOpciones: [],
       tipoComprobanteOpciones: [],
       impuestoOpciones: [],
@@ -196,14 +217,22 @@
       precio: 0,
       producto: '',
       productos: [],
+      total: 0,
+      totalParcial: 0,
+      totalImpuesto: 0,
       dialog: false,
       validarMensajeDetalle: [],
+      tipoComprobanteRules: [
+        (v) => !!v || "Tipo Comprobante es requerido"
+      ],
       numeroComprobanteRules: [
         (v) => !!v || "Numero Comprobante es requerido",
         (v) =>
           (v && v.length < 100) ||
-          "Numero de Comprobandte no puede ser superior a 100",
-      ]
+          "Numero de Comprobante no puede ser superior a 100",
+      ],
+      validateMensaje: [],
+      viewMessageForm: false,
     }),
 
     computed: {
@@ -220,8 +249,25 @@
       },
 
       formTitle() {
-        return this.editedIndex === 1 ? 'Nuevo Cliente' : 'Editar Cliente'
+        return this.editedIndex === 1 ? 'Nueva Compra' : 'Editar Compra'
       },
+
+      calcularTotal: function () {
+        let resultado = 0;
+        for(var i=0;i<this.detalles.length; i++){
+          resultado = resultado + (this.detalles[i].cantidad*this.detalles[i].precio)
+        }
+        return resultado
+      },
+
+      calcularTotalImpuesto: function () {
+        console.log('impuesto')
+        return ((this.total*(this.impuesto.value/100))/(1+(this.impuesto.value/100))).toFixed(2);
+      },
+
+      calcularTotalParcial: function () {
+        return this.total - this.totalImpuesto
+      }
     },
 
     created() {
@@ -259,9 +305,12 @@
           impuestoArray = res.data.impuesto;
           impuestoArray.map(function(resp){
             self.impuestoOpciones.push({text: resp.text, value:resp.id});
-          })
+          });
+          //tomamos el 10 % por defecto
+          self.impuesto = {'text': res.data.impuesto[1].text, value:res.data.impuesto[1].id}
         })
       },
+
 
       listarTipoComprobanteChoices (){
         // obtener en el selector de sexo
@@ -318,6 +367,8 @@
         this.validaDetalle=0;
         this.validarMensajeDetalle=[];
         //
+        this.viewMessageForm = false;
+        this.validateMensaje = [];
       },
 
       agregarDetalle() {
@@ -383,8 +434,28 @@
       },
 
       validar(){
-        if(!this.detalles) {
-          return false
+        this.validateMensaje = [];
+        if (!this.tipo_comprobante){
+          this.validateMensaje.push('Debe ingresar el Tipo Comprobante')
+        }
+        if (!this.numero_comprobante){
+          this.validateMensaje.push('Debe ingresar el Numero Comprobante')
+        }
+        if (!this.fecha){
+          this.validateMensaje.push('Debe ingresar la fecha')
+        }
+        if (!this.impuesto){
+          this.validateMensaje.push('Debe ingresar el impuesto')
+        }
+        if (!this.proveedor){
+          this.validateMensaje.push('Debe ingresar el proveedor')
+        }
+        if(this.detalles.length == 0) {
+          this.validateMensaje.push('Debe ingresar al menos un Detalle')
+        }
+
+        if (this.validateMensaje.length > 0) {
+          this.viewMessageForm = true
         }
       },
 
@@ -403,8 +474,6 @@
             console.log(err);
           });
 
-        } else{
-          console.log('error por que no es valido')
         }
 
       },
