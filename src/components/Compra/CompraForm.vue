@@ -240,7 +240,8 @@
         'getProveedorListFromService',
         'getTipoComprobanteListFromService',
         'getImpuestoListFromService',
-        'getArticuloListFromService'
+        'getArticuloListFromService',
+        'getCompraDetailFromService'
       ]),
       fromDateDisp() {
         return this.fecha;
@@ -275,17 +276,18 @@
       this.listarProductos();
       this.listarImpuestoChoices();
       this.listarTipoComprobanteChoices();
-      if (this.$route.name === 'orden_compra_update') {
+      if (this.$route.name === 'compra_update') {
         // cuando es edicion seteamos editar el editedIndex a 2
         this.editedIndex = 2;
-        this.getOrdenCompraDetail(this.$route.params.id);
+        this.getCompraDetail(this.$route.params.id);
       }
     },
 
 
     methods: {
       ...mapActions([
-        'saveCompra'
+        'saveCompra',
+        'updateCompra'
       ]),
       validate() {
         this.$refs.form.validate()
@@ -425,8 +427,9 @@
       },
 
 
-      getOrdenCompraDetail (id) {
-        this.getOrdenCompraDetailFromService(id).then(res => {
+      getCompraDetail (id) {
+        // traemos data de la compra seleccionada
+        this.getCompraDetailFromService(id).then(res => {
           this.proveedor = res.data.proveedor;
           this.fecha = res.data.fecha;
           this.detalles = res.data.detalles;
@@ -434,6 +437,7 @@
       },
 
       validar(){
+        console.log('validando')
         this.validateMensaje = [];
         if (!this.tipo_comprobante){
           this.validateMensaje.push('Debe ingresar el Tipo Comprobante')
@@ -456,23 +460,43 @@
 
         if (this.validateMensaje.length > 0) {
           this.viewMessageForm = true
+          return false
+        } else {
+          return true
         }
       },
 
       guardar() {
         if (this.validar()) {
-          this.saveCompra({
-            'proveedor': this.proveedor,
-            'tipo_comprobante': this.tipo_comprobante,
-            'numero_comprobante': this.numero_comprobante,
-            'impuesto': this.impuesto,
-            'fecha': this.fecha,
-            'detalles': this.detalles
-          }).then(res => {
-            this.$router.push({name: 'compra'})
-          }).catch(err => {
-            console.log(err);
-          });
+          if (this.editedIndex == 2) {
+            this.updateCompra({
+              'id': this.$route.params.id,
+              'proveedor': this.proveedor,
+              'tipo_comprobante': this.tipo_comprobante,
+              'numero_comprobante': this.numero_comprobante,
+              'impuesto': this.impuesto.value,
+              'fecha': this.fecha,
+              'detalles': this.detalles
+            }).then(res => {
+              this.$router.push({name: 'compra'})
+            }).catch(err => {
+              console.log(err);
+            });
+          } else {
+            this.saveCompra({
+              'proveedor': this.proveedor,
+              'tipo_comprobante': this.tipo_comprobante,
+              'numero_comprobante': this.numero_comprobante,
+              'impuesto': this.impuesto.value,
+              'fecha': this.fecha,
+              'detalles': this.detalles
+            }).then(res => {
+              this.$router.push({name: 'compra'})
+            }).catch(err => {
+              console.log(err);
+            });
+          }
+
 
         }
 

@@ -49,6 +49,18 @@ export default class CompraService {
     })
   }
 
+  /**
+   * Registra una nueva orden de compra
+   * @param {*} data Orden Compra a guardar
+   */
+  static async updateCompra (data) {
+    return axios.put(`${process.env.VUE_APP_API}${this.baseUrl}/${data.id}/`, data, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+  }
+
 
   /**
    * Listado de Sexo Choices del backend

@@ -12,7 +12,11 @@ export default {
 
   actions: {
 
-    saveOrdenCompra: async (_, orden) => OrdenCompraService.saveOrdenCompra(orden),
+    saveCompra: async (_, compra) => CompraService.saveCompra(compra),
+
+    updateCompra: (_, data) => {
+      return CompraService.updateCompra(data)
+    },
 
   },
 
