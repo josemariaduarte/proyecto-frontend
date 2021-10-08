@@ -124,6 +124,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/compra/:id',
+    name: 'compra_update',
+    component: CompraForm,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/login',
     name: 'login',
     component: Login,

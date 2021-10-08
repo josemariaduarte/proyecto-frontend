@@ -263,10 +263,11 @@
 
       calcularTotalImpuesto: function () {
         console.log('impuesto')
-        return ((this.total*(this.impuesto.value/100))/(1+(this.impuesto.value/100))).toFixed(2);
+        return ((this.total*(this.impuesto/100))/(1+(this.impuesto/100))).toFixed(2);
       },
 
       calcularTotalParcial: function () {
+        console.log('total parcial')
         return this.total - this.totalImpuesto
       }
     },
@@ -430,6 +431,9 @@
       getCompraDetail (id) {
         // traemos data de la compra seleccionada
         this.getCompraDetailFromService(id).then(res => {
+          this.tipo_comprobante = res.data.tipo_comprobante;
+          this.numero_comprobante = res.data.numero_comprobante;
+          this.impuesto = res.data.impuesto;
           this.proveedor = res.data.proveedor;
           this.fecha = res.data.fecha;
           this.detalles = res.data.detalles;

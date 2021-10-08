@@ -20,11 +20,11 @@
                     :items="compras"
                     :search="search"
                     class="elevation-1">
-<!--                <template v-slot:item.opciones="{ item }">-->
-<!--                    <v-icon small class="mr-2" @click="editItem(item)">-->
-<!--                        open_in_new-->
-<!--                    </v-icon>-->
-<!--                </template>-->
+                <template v-slot:item.opciones="{ item }">
+                    <v-icon small class="mr-2" @click="editItem(item)">
+                        open_in_new
+                    </v-icon>
+                </template>
 
 
 
@@ -95,7 +95,7 @@
 
       editItem(item) {
         // permite redirigir a la vista de edicion
-        // this.$router.push({ path: `/orden_compra/${item.id}`}, () => {})
+        this.$router.push({ path: `/compra/${item.id}`}, () => {})
 
       },
 
