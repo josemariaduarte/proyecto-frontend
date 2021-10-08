@@ -91,5 +91,20 @@ export default class CompraService {
   }
 
 
+  /**
+   * DesaActivar Compra
+   * @param {id} data compra
+   */
+
+  static async deactivateCompra (id) {
+    return axios.post(`${process.env.VUE_APP_API}${this.baseUrl}/${id}/inactivar/`, null,{
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+  }
+
+
+
 
 }

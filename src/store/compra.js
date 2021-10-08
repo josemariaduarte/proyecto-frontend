@@ -18,6 +18,8 @@ export default {
       return CompraService.updateCompra(data)
     },
 
+    deactivateCompra: (_, {id}) => CompraService.deactivateCompra(id),
+
   },
 
   getters: {
