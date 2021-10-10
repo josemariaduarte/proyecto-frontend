@@ -244,7 +244,7 @@
         'getTipoComprobanteListFromService',
         'getImpuestoListFromService',
         'getArticuloListFromService',
-        'getVentaDetailFromService'
+        'getVentaDetailFromService',
       ]),
       fromDateDisp() {
         return this.fecha;
@@ -281,7 +281,7 @@
       if (this.$route.name === 'venta_update') {
         // cuando es edicion seteamos editar el editedIndex a 2
         this.editedIndex = 2;
-        this.getCompraDetail(this.$route.params.id);
+        this.getVentaDetail(this.$route.params.id);
       }
     },
 
@@ -436,11 +436,11 @@
 
       getVentaDetail (id) {
         // traemos data de la compra seleccionada
-        this.getCompraDetailFromService(id).then(res => {
+        this.getVentaDetailFromService(id).then(res => {
           this.tipo_comprobante = res.data.tipo_comprobante;
           this.numero_comprobante = res.data.numero_comprobante;
           this.impuesto = res.data.impuesto;
-          this.proveedor = res.data.proveedor;
+          this.cliente = res.data.cliente;
           this.fecha = res.data.fecha;
           this.detalles = res.data.detalles;
         })

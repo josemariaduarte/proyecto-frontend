@@ -150,6 +150,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/venta/:id',
+    name: 'venta_update',
+    component: VentaForm,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting

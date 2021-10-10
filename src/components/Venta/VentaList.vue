@@ -44,7 +44,7 @@
                         {{ actionTitle }}
                     </v-card-title>
                     <v-card-text>
-                        Estas a punto de {{ getAction }} el item {{ addNombre }}
+                         {{ addNombre }}
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -94,7 +94,7 @@
       ]),
 
       actionTitle() {
-        return this.addAccion === 1 ? 'Eliminar Compra' : 'Habilitar Item'
+        return this.addAccion === 1 ? 'Eliminar Venta' : 'Habilitar Venta'
       },
       getAction() {
         return this.addAccion === 1 ? 'eliminar' : 'habilitar'
@@ -114,7 +114,7 @@
 
     methods: {
       ...mapActions([
-        'deactivateCompra'
+        'deactivateVenta'
       ]),
 
       listar () {
@@ -135,13 +135,13 @@
 
       editItem(item) {
         // permite redirigir a la vista de edicion
-        this.$router.push({ path: `/compra/${item.id}`}, () => {})
+        this.$router.push({ path: `/venta/${item.id}`}, () => {})
 
       },
 
       activarDesactivarMostrar(action, item) {
         this.addModal = 1;   // controla para que se muestre el modal
-        this.addNombre = "Estas seguro que desea eliminar esta compra";
+        this.addNombre = "Estas seguro que desea eliminar esta venta";
         this.addId = item.id;
         if (action === 1) {
           this.addAccion = 1;
@@ -167,7 +167,7 @@
 
       desactivar () {
         let self=this;
-        self.deactivateCompra({
+        self.deactivateVenta({
           'id': self.addId
         }).then(res =>{
           self.addModal=0;
