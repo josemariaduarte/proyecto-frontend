@@ -15,6 +15,7 @@ import OrdenCompraForm from '../components/Compra/OrdenCompraForm'
 import CompraList from '../components/Compra/CompraList'
 import CompraForm from '../components/Compra/CompraForm'
 import VentaList from '../components/Venta/VentaList'
+import VentaForm from '../components/Venta/VentaForm'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -140,6 +141,12 @@ const routes = [
     path: '/venta',
     name: 'venta',
     component: VentaList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/venta/crear',
+    name: 'venta_create',
+    component: VentaForm,
     meta: { requiresAuth: true },
   },
   {

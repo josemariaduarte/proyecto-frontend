@@ -24,9 +24,9 @@
 <!--                    <v-icon small class="mr-2" @click="editItem(item)">-->
 <!--                        open_in_new-->
 <!--                    </v-icon>-->
-<!--                    <v-icon v-if="item.activo" small class="mr-2" @click="activarDesactivarMostrar(1, item)">-->
-<!--                        block-->
-<!--                    </v-icon>-->
+                    <v-icon v-if="item.activo" small class="mr-2" @click="activarDesactivarMostrar(1, item)">
+                        block
+                    </v-icon>
                 </template>
 
 
@@ -128,8 +128,9 @@
       },
 
       redirectToAddView () {
-        this.$router.push({ name: 'compra_create'})
+        this.$router.push({ name: 'venta_create'})
       },
+
 
 
       editItem(item) {
