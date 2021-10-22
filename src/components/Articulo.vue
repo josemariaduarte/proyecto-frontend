@@ -80,8 +80,7 @@
         headers: [
           {text: 'Opciones', value: 'opciones', sortable: false},
           {text: 'Nombre', value: 'nombre', sortable: true},
-          {text: 'Precio Venta', value: 'precio_venta', sortable: true},
-          {text: 'Cantidad', value: 'cantidad', sortable: true},
+          {text: 'Descripcion', value: 'descripcion', sortable: true},
         ],
         editedIndex: -1,
         _id: '',

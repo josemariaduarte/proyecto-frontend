@@ -29,27 +29,6 @@
                             </v-flex>
                             <v-flex xs6 sm6 md6>
                                 <v-text-field
-                                        v-model="precio_compra"
-                                        type="number"
-                                        label="Precio Compra">
-                                </v-text-field>
-                            </v-flex>
-                            <v-flex xs6 sm6 md6>
-                                <v-text-field
-                                        v-model="precio_venta"
-                                        type="number"
-                                        label="Precio Venta">
-                                </v-text-field>
-                            </v-flex>
-                            <v-flex xs6 sm6 md6>
-                                <v-text-field
-                                        v-model="cantidad"
-                                        type="number"
-                                        label="Cantidad">
-                                </v-text-field>
-                            </v-flex>
-                            <v-flex xs6 sm6 md6>
-                                <v-text-field
                                         v-model="cantidad_minima_stock"
                                         type="number"
                                         label="Cantidad Min. Stock">
@@ -123,9 +102,6 @@
       nombre: '',
       descripcion: '',
       proveedor: '',
-      precio_compra: '',
-      precio_venta: '',
-      cantidad: '',
       cantidad_minima_stock: '',
       subcategoria: '',
       deposito: '',
@@ -250,9 +226,6 @@
         this.getArticuloDetailFromService(id).then(res => {
           this.nombre = res.data.nombre;
           this.descripcion = res.data.descripcion;
-          this.precio_compra = res.data.precio_compra;
-          this.precio_venta = res.data.precio_venta;
-          this.cantidad = res.data.cantidad;
           this.cantidad_minima_stock = res.data.cantidad_minima_stock;
           this.subcategoria = res.data.subcategoria;
           this.deposito = res.data.deposito;
@@ -267,9 +240,6 @@
             'id': this.$route.params.id,
             'nombre': this.nombre,
             'descripcion': this.descripcion,
-            'precio_compra': this.precio_compra,
-            'precio_venta': this.precio_venta,
-            'cantidad': this.cantidad,
             'cantidad_minima_stock': this.cantidad_minima_stock,
             'subcategoria': this.subcategoria,
             'deposito': this.deposito,
@@ -285,9 +255,6 @@
           this.saveArticulo({
             'nombre': this.nombre,
             'descripcion': this.descripcion,
-            'precio_compra': this.precio_compra,
-            'precio_venta': this.precio_venta,
-            'cantidad': this.cantidad,
             'cantidad_minima_stock': this.cantidad_minima_stock,
             'subcategoria': this.subcategoria,
             'deposito': this.deposito,
