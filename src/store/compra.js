@@ -49,6 +49,14 @@ export default {
       }
     },
 
+    getCondicionListFromService: () => async () => {
+      if (localStorage.getItem('access')) {
+        return CompraService.getCondicionListService()
+          .then(res => res)
+          .catch(err => err)
+      }
+    },
+
     getImpuestoListFromService: () => async () => {
       if (localStorage.getItem('access')) {
         return CompraService.getImpuestoListService()

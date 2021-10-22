@@ -34,12 +34,14 @@
 
                                 </v-text-field>
                             </v-flex>
+
                             <v-flex xs6 sm6 md6>
-                                <v-select v-model="impuesto"
-                                          :items="impuestoOpciones"
+                                <v-select v-model="condicion"
+                                          :items="condicionOpciones"
                                           item-text="text"
                                           item-value="value"
-                                          label="Impuesto">
+                                          :rules="condicionRules"
+                                          label="Condición">
                                 </v-select>
                             </v-flex>
                             <v-flex xs6 sm6 md6>
@@ -202,6 +204,8 @@
       proveedor: '',
       tipo_comprobante: '',
       numero_comprobante: '',
+      condicion: {'text': 'CONTADO', value: "CONTADO"},
+      condicionOpciones: [],
       impuesto: {'text': '10%', value: 10},
       proveedorOpciones: [],
       tipoComprobanteOpciones: [],
@@ -225,6 +229,9 @@
       tipoComprobanteRules: [
         (v) => !!v || "Tipo Comprobante es requerido"
       ],
+      condicionRules: [
+        (v) => !!v || "Condición es requerido"
+      ],
       numeroComprobanteRules: [
         (v) => !!v || "Numero Comprobante es requerido",
         (v) =>
@@ -240,6 +247,7 @@
         'getProveedorListFromService',
         'getTipoComprobanteListFromService',
         'getImpuestoListFromService',
+        'getCondicionListFromService',
         'getArticuloListFromService',
         'getCompraDetailFromService'
       ]),
@@ -277,6 +285,7 @@
       this.listarProductos();
       this.listarImpuestoChoices();
       this.listarTipoComprobanteChoices();
+      this.listarCondicionChoices();
       if (this.$route.name === 'compra_update') {
         // cuando es edicion seteamos editar el editedIndex a 2
         this.editedIndex = 2;
@@ -327,6 +336,18 @@
         })
       },
 
+      listarCondicionChoices (){
+        // obtener en el selector de condicion de compra
+        let self = this;
+        let condArray = [];
+        self.getCondicionListFromService().then(res => {
+          condArray = res.data.condicion;
+          condArray.map(function(resp){
+            self.condicionOpciones.push({text: resp.text, value:resp.id});
+          })
+        })
+      },
+
       listarProveedor (){
         // obtener en el selector de orden de compra
         let self = this;
@@ -338,6 +359,8 @@
           })
         })
       },
+
+
 
       listarProductos (){
         // obtener en el selector de orden de compra

@@ -92,6 +92,21 @@ export default class CompraService {
 
 
   /**
+   * Listado de condiciones
+   */
+  static async getCondicionListService () {
+    let string = `${process.env.VUE_APP_API}movimientos/condicion_choices/`
+
+    return axios.get(string, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+
+  }
+
+
+  /**
    * DesaActivar Compra
    * @param {id} data compra
    */
