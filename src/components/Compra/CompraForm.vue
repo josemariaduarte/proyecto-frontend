@@ -108,6 +108,15 @@
                                         <template v-slot:item.precio="{ item }">
                                             <v-text-field type="number" v-model="item.precio"></v-text-field>
                                         </template>
+                                        <template v-slot:item.impuesto="{ item }">
+                                            <v-select v-model="item.impuesto"
+                                                      :items="impuestoOpciones"
+                                                      item-text="text"
+                                                      item-value="value"
+                                                      label="Impuesto">
+                                            </v-select>
+                                            <!--                                            <v-text-field v-model="item.product.nombre" readonly></v-text-field>-->
+                                        </template>
 
                                         <template v-slot:no-data>
                                             <h3>No hay Registros</h3>
@@ -116,11 +125,17 @@
                                 </template>
                             </v-flex>
                             <v-flex xs12 sm12 md12 lg12 xl12>
-                                <v-flex class="text-xs-right">
-                                    <strong> Total Parcial:{{ totalParcial=calcularTotalParcial}}</strong>
+<!--                                <v-flex class="text-xs-right">-->
+<!--                                    <strong> Total Parcial:{{ totalParcial=calcularTotalParcial}}</strong>-->
+<!--                                </v-flex>-->
+                                <v-flex class="text-xl-end">
+                                    <strong> Total IVA Excenta: {{ totalImpuestoExcenta }} Gs.</strong>
                                 </v-flex>
                                 <v-flex class="text-xl-end">
-                                    <strong> Total Impuesto:{{ totalImpuesto=calcularTotalImpuesto }}</strong>
+                                    <strong> Total IVA 5%: {{ totalImpuesto5 }} Gs.</strong>
+                                </v-flex>
+                                <v-flex class="text-xl-end">
+                                    <strong> Total IVA 10%: {{ totalImpuesto10 }} Gs.</strong>
                                 </v-flex>
                                 <v-flex class="text-xs-left">
                                     <strong> Total Neto:{{ total=calcularTotal }}</strong>
@@ -145,8 +160,6 @@
                                     <v-layout wrap>
 
                                         <v-flex xs12 sm12 md12>
-
-
                                             <v-select v-model="producto"
                                                       :items="productos"
                                                       item-text="text"
@@ -161,6 +174,16 @@
                                         <v-flex xs12 sm6 md6>
                                             <v-text-field type="number" v-model="precio" label="Precio"></v-text-field>
                                         </v-flex>
+                                        <v-flex xs12 sm12 md12>
+                                            <v-select v-model="impuesto"
+                                                      :items="impuestoOpciones"
+                                                      item-text="text"
+                                                      item-value="value"
+                                                      label="Impuesto">
+                                            </v-select>
+                                        </v-flex>
+
+
 
 
 
@@ -214,6 +237,7 @@
         {text: 'Borrar', value: 'borrar', sortable: false},
         {text: 'Articulo', value: 'producto', sortable: true},
         {text: 'Cantidad', value: 'cantidad', sortable: true},
+        {text: 'Impuesto', value: 'impuesto', sortable: true},
         {text: 'Precio', value: 'precio', sortable: true},
       ],
       detalles: [],
@@ -223,7 +247,9 @@
       productos: [],
       total: 0,
       totalParcial: 0,
-      totalImpuesto: 0,
+      totalImpuesto10: 0,
+      totalImpuesto5: 0,
+      totalImpuestoExcenta: 0,
       dialog: false,
       validarMensajeDetalle: [],
       tipoComprobanteRules: [
@@ -269,10 +295,6 @@
         return resultado
       },
 
-      calcularTotalImpuesto: function () {
-        console.log('impuesto')
-        return ((this.total*(this.impuesto/100))/(1+(this.impuesto/100))).toFixed(2);
-      },
 
       calcularTotalParcial: function () {
         console.log('total parcial')
@@ -388,6 +410,7 @@
         this.producto='';
         this.precio=0;
         this.cantidad=0;
+        this.impuesto={'text': '10%', value: 10};
         //
         // limpiamos los elementos de validacion
         this.validaDetalle=0;
@@ -406,9 +429,17 @@
           {
             producto: this.producto,
             cantidad: this.cantidad,
-            precio: this.precio
+            precio: this.precio,
+            impuesto: this.impuesto.value
           }
         );
+        if (this.impuesto.value == 10) {
+          this.totalImpuesto10 = this.totalImpuesto10 + ((this.cantidad*this.precio)*(10/100))
+        } else if (this.impuesto.value == 5) {
+          this.totalImpuesto5 = this.totalImpuesto5 + ((this.cantidad*this.precio)*(5/100))
+        } else {
+          this.totalImpuestoExcenta = this.totalImpuestoExcenta + (this.cantidad*this.precio)
+        }
         // luego vaciamos el campo de codigo
         this.close()
 
@@ -429,6 +460,9 @@
         }
         if (!this.cantidad){
           this.validarMensajeDetalle.push('Debe ingresar la cantidad')
+        }
+        if (!this.impuesto){
+          this.validarMensajeDetalle.push('Debe ingresar el impuesto')
         }
         let productoBandera = false;
         for(var i=0; i < this.detalles.length; i++){
