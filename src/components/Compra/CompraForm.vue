@@ -129,13 +129,13 @@
 <!--                                    <strong> Total Parcial:{{ totalParcial=calcularTotalParcial}}</strong>-->
 <!--                                </v-flex>-->
                                 <v-flex class="text-xl-end">
-                                    <strong> Total IVA Excenta: {{ totalImpuestoExcenta }} Gs.</strong>
+                                    <strong> Total IVA Excenta: {{ totalImpuestoExcenta=calcularTotalExcenta }} Gs.</strong>
                                 </v-flex>
                                 <v-flex class="text-xl-end">
-                                    <strong> Total IVA 5%: {{ totalImpuesto5 }} Gs.</strong>
+                                    <strong> Total IVA 5%: {{ totalImpuesto5=calcularTotalIva5 }} Gs.</strong>
                                 </v-flex>
                                 <v-flex class="text-xl-end">
-                                    <strong> Total IVA 10%: {{ totalImpuesto10 }} Gs.</strong>
+                                    <strong> Total IVA 10%: {{ totalImpuesto10=calcularTotalIva10 }} Gs.</strong>
                                 </v-flex>
                                 <v-flex class="text-xs-left">
                                     <strong> Total Neto:{{ total=calcularTotal }}</strong>
@@ -287,10 +287,45 @@
         return this.editedIndex === 1 ? 'Nueva Compra' : 'Editar Compra'
       },
 
+      calcularTotalExcenta: function () {
+        //permite realizar el calculo del excenta
+        let total = 0;
+        for(var i=0;i<this.detalles.length; i++){
+          if (this.detalles[i].impuesto == 0) {
+            total = total + (this.detalles[i].cantidad*this.detalles[i].precio)
+          }
+        }
+        return total
+      },
+
+      calcularTotalIva5: function () {
+        //permite realizar el calculo del iva10
+        let total = 0;
+        for(var i=0;i<this.detalles.length; i++){
+          if (this.detalles[i].impuesto == 5) {
+            total = total + ((this.detalles[i].cantidad*this.detalles[i].precio)*(5/100))
+          }
+        }
+        return total
+      },
+
+      calcularTotalIva10: function () {
+        //permite realizar el calculo del iva10
+        let total = 0;
+        for(var i=0;i<this.detalles.length; i++){
+          if (this.detalles[i].impuesto == 10) {
+            total = total + ((this.detalles[i].cantidad*this.detalles[i].precio)*(10/100))
+          }
+        }
+        return total
+      },
+
       calcularTotal: function () {
         let resultado = 0;
+        console.log("entrando a calcular el total")
         for(var i=0;i<this.detalles.length; i++){
           resultado = resultado + (this.detalles[i].cantidad*this.detalles[i].precio)
+
         }
         return resultado
       },
@@ -433,13 +468,7 @@
             impuesto: this.impuesto.value
           }
         );
-        if (this.impuesto.value == 10) {
-          this.totalImpuesto10 = this.totalImpuesto10 + ((this.cantidad*this.precio)*(10/100))
-        } else if (this.impuesto.value == 5) {
-          this.totalImpuesto5 = this.totalImpuesto5 + ((this.cantidad*this.precio)*(5/100))
-        } else {
-          this.totalImpuestoExcenta = this.totalImpuestoExcenta + (this.cantidad*this.precio)
-        }
+
         // luego vaciamos el campo de codigo
         this.close()
 
@@ -494,6 +523,9 @@
           this.proveedor = res.data.proveedor;
           this.fecha = res.data.fecha;
           this.detalles = res.data.detalles;
+          this.totalImpuesto10=res.data.total_iva10;
+          this.totalImpuesto5=res.data.total_iva5;
+          this.totalImpuestoExcenta=res.data.total_excenta;
         })
       },
 
