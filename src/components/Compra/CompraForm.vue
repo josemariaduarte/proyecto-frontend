@@ -428,7 +428,7 @@
           console.log('ok')
           productoArray = res.data.results;
           productoArray.map(function(resp){
-            self.productos.push({text: resp.nombre, value:resp.id});
+            self.productos.push({text: resp.id + " - " +resp.nombre, value:resp.id});
           })
         })
       },
