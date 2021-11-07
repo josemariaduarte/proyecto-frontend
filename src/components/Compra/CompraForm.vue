@@ -98,21 +98,23 @@
                                                       :items="productos"
                                                       item-text="text"
                                                       item-value="value"
+                                                      :readonly="item.id"
                                                       label="Producto">
                                             </v-select>
 <!--                                            <v-text-field v-model="item.product.nombre" readonly></v-text-field>-->
                                         </template>
                                         <template v-slot:item.cantidad="{ item }">
-                                            <v-text-field type="number" v-model="item.cantidad"></v-text-field>
+                                            <v-text-field type="number" v-model="item.cantidad" :readonly="item.id"></v-text-field>
                                         </template>
                                         <template v-slot:item.precio="{ item }">
-                                            <v-text-field type="number" v-model="item.precio"></v-text-field>
+                                            <v-text-field type="number" v-model="item.precio" :readonly="item.id"></v-text-field>
                                         </template>
                                         <template v-slot:item.impuesto="{ item }">
                                             <v-select v-model="item.impuesto"
                                                       :items="impuestoOpciones"
                                                       item-text="text"
                                                       item-value="value"
+                                                      :readonly="item.id"
                                                       label="Impuesto">
                                             </v-select>
                                             <!--                                            <v-text-field v-model="item.product.nombre" readonly></v-text-field>-->
@@ -265,7 +267,7 @@
           "Numero de Comprobante no puede ser superior a 100",
       ],
       validateMensaje: [],
-      viewMessageForm: false,
+      viewMessageForm: false
     }),
 
     computed: {
@@ -313,16 +315,17 @@
         //permite realizar el calculo del iva10
         let total = 0;
         for(var i=0;i<this.detalles.length; i++){
-          if (this.detalles[i].impuesto == 10) {
+          if ( this.detalles[i].impuesto== 10) {
             total = total + ((this.detalles[i].cantidad*this.detalles[i].precio)*(10/100))
           }
         }
         return total
       },
 
+
+
       calcularTotal: function () {
         let resultado = 0;
-        console.log("entrando a calcular el total")
         for(var i=0;i<this.detalles.length; i++){
           resultado = resultado + (this.detalles[i].cantidad*this.detalles[i].precio)
 
@@ -332,7 +335,6 @@
 
 
       calcularTotalParcial: function () {
-        console.log('total parcial')
         return this.total - this.totalImpuesto
       }
     },
@@ -425,7 +427,6 @@
         let self = this;
         let productoArray = [];
         self.getArticuloListFromService(1, 100).then(res => {
-          console.log('ok')
           productoArray = res.data.results;
           productoArray.map(function(resp){
             self.productos.push({text: resp.id + " - " +resp.nombre, value:resp.id});
@@ -456,8 +457,15 @@
       },
 
       agregarDetalle() {
+        console.log('detalles agregando')
         if (this.validarDetalle()) {
           return;
+        }
+        let impuesto = 10
+        if(this.impuesto.hasOwnProperty('value')) {
+          impuesto = this.impuesto.value
+        } else {
+          impuesto = this.impuesto
         }
         // permite agregar al detalle
         this.detalles.push(
@@ -465,7 +473,7 @@
             producto: this.producto,
             cantidad: this.cantidad,
             precio: this.precio,
-            impuesto: this.impuesto.value
+            impuesto: impuesto
           }
         );
 
@@ -495,7 +503,7 @@
         }
         let productoBandera = false;
         for(var i=0; i < this.detalles.length; i++){
-          if (this.detalles[i].producto.value==this.producto.value){
+          if (this.detalles[i].producto==this.producto){
             productoBandera=true;
           }
         }
@@ -519,7 +527,7 @@
         this.getCompraDetailFromService(id).then(res => {
           this.tipo_comprobante = res.data.tipo_comprobante;
           this.numero_comprobante = res.data.numero_comprobante;
-          this.impuesto = res.data.impuesto;
+          this.condicion = res.data.condicion;
           this.proveedor = res.data.proveedor;
           this.fecha = res.data.fecha;
           this.detalles = res.data.detalles;
@@ -530,7 +538,7 @@
       },
 
       validar(){
-        console.log('validando')
+
         this.validateMensaje = [];
         if (!this.tipo_comprobante){
           this.validateMensaje.push('Debe ingresar el Tipo Comprobante')
@@ -541,9 +549,9 @@
         if (!this.fecha){
           this.validateMensaje.push('Debe ingresar la fecha')
         }
-        if (!this.impuesto){
-          this.validateMensaje.push('Debe ingresar el impuesto')
-        }
+        // if (!this.impuesto){
+        //   this.validateMensaje.push('Debe ingresar el impuesto')
+        // }
         if (!this.proveedor){
           this.validateMensaje.push('Debe ingresar el proveedor')
         }
@@ -567,26 +575,28 @@
               'proveedor': this.proveedor,
               'tipo_comprobante': this.tipo_comprobante,
               'numero_comprobante': this.numero_comprobante,
-              'impuesto': this.impuesto.value,
+              'condicion': this.condicion.value,
               'fecha': this.fecha,
               'detalles': this.detalles
             }).then(res => {
-              this.$router.push({name: 'compra'})
+              this.volerListado();
             }).catch(err => {
               console.log(err);
+              this.volerListado();
             });
           } else {
             this.saveCompra({
               'proveedor': this.proveedor,
               'tipo_comprobante': this.tipo_comprobante,
               'numero_comprobante': this.numero_comprobante,
-              'impuesto': this.impuesto.value,
+              'condicion': this.condicion.value,
               'fecha': this.fecha,
               'detalles': this.detalles
             }).then(res => {
-              this.$router.push({name: 'compra'})
+              this.volerListado()
             }).catch(err => {
               console.log(err);
+              this.volerListado();
             });
           }
 

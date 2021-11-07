@@ -14,7 +14,7 @@ export default {
 
     saveVenta: async (_, data) => VentaService.saveVenta(data),
 
-    updateCompra: (_, data) => {
+    updateVenta: (_, data) => {
       return VentaService.updateVenta(data)
     },
 
