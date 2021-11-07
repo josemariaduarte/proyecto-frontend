@@ -35,11 +35,12 @@
                                 </v-text-field>
                             </v-flex>
                             <v-flex xs6 sm6 md6>
-                                <v-select v-model="impuesto"
-                                          :items="impuestoOpciones"
+                                <v-select v-model="condicion"
+                                          :items="condicionOpciones"
                                           item-text="text"
                                           item-value="value"
-                                          label="Impuesto">
+                                          :rules="condicionRules"
+                                          label="Condición">
                                 </v-select>
                             </v-flex>
                             <v-flex xs6 sm6 md6>
@@ -102,10 +103,20 @@
 <!--                                            <v-text-field v-model="item.producto.value" readonly></v-text-field>-->
                                         </template>
                                         <template v-slot:item.cantidad="{ item }">
-                                            <v-text-field type="number" v-model="item.cantidad"></v-text-field>
+                                            <v-text-field type="number" v-model="item.cantidad" :readonly="item.id"></v-text-field>
                                         </template>
                                         <template v-slot:item.precio="{ item }">
-                                            <v-text-field type="number" v-model="item.precio"></v-text-field>
+                                            <v-text-field type="number" v-model="item.precio" readonly></v-text-field>
+                                        </template>
+                                        <template v-slot:item.impuesto="{ item }">
+                                            <v-select v-model="item.impuesto"
+                                                      :items="impuestoOpciones"
+                                                      item-text="text"
+                                                      item-value="value"
+                                                      :readonly="item.id"
+                                                      label="Impuesto">
+                                            </v-select>
+                                            <!--                                            <v-text-field v-model="item.product.nombre" readonly></v-text-field>-->
                                         </template>
 
                                         <template v-slot:no-data>
@@ -115,11 +126,17 @@
                                 </template>
                             </v-flex>
                             <v-flex xs12 sm12 md12 lg12 xl12>
-                                <v-flex class="text-xs-right">
-                                    <strong> Total Parcial:{{ totalParcial=calcularTotalParcial}}</strong>
+                                <!--                                <v-flex class="text-xs-right">-->
+                                <!--                                    <strong> Total Parcial:{{ totalParcial=calcularTotalParcial}}</strong>-->
+                                <!--                                </v-flex>-->
+                                <v-flex class="text-xl-end">
+                                    <strong> Total IVA Excenta: {{ totalImpuestoExcenta=calcularTotalExcenta }} Gs.</strong>
                                 </v-flex>
                                 <v-flex class="text-xl-end">
-                                    <strong> Total Impuesto:{{ totalImpuesto=calcularTotalImpuesto }}</strong>
+                                    <strong> Total IVA 5%: {{ totalImpuesto5=calcularTotalIva5 }} Gs.</strong>
+                                </v-flex>
+                                <v-flex class="text-xl-end">
+                                    <strong> Total IVA 10%: {{ totalImpuesto10=calcularTotalIva10 }} Gs.</strong>
                                 </v-flex>
                                 <v-flex class="text-xs-left">
                                     <strong> Total Neto:{{ total=calcularTotal }}</strong>
@@ -158,7 +175,15 @@
                                         </v-flex>
 
                                         <v-flex xs12 sm6 md6>
-                                            <v-text-field type="number" v-model="precio" label="Precio"></v-text-field>
+                                            <v-text-field type="number" v-model="precio" label="Precio" readOnly></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12 sm12 md12>
+                                            <v-select v-model="impuesto"
+                                                      :items="impuestoOpciones"
+                                                      item-text="text"
+                                                      item-value="value"
+                                                      label="Impuesto">
+                                            </v-select>
                                         </v-flex>
 
 
@@ -204,6 +229,8 @@
       tipo_comprobante: '',
       numero_comprobante: '',
       cantidad_maxima_stock: 0,
+      condicion: {'text': 'CONTADO', value: "CONTADO"},
+      condicionOpciones: [],
       impuesto: {'text': '10%', value: 10},
       clienteOpciones: [],
       tipoComprobanteOpciones: [],
@@ -212,6 +239,7 @@
         {text: 'Borrar', value: 'borrar', sortable: false},
         {text: 'Articulo', value: 'producto', sortable: true},
         {text: 'Cantidad', value: 'cantidad', sortable: true},
+        {text: 'Impuesto', value: 'impuesto', sortable: true},
         {text: 'Precio', value: 'precio', sortable: true},
       ],
       detalles: [],
@@ -221,7 +249,9 @@
       productos: [],
       total: 0,
       totalParcial: 0,
-      totalImpuesto: 0,
+      totalImpuesto10: 0,
+      totalImpuesto5: 0,
+      totalImpuestoExcenta: 0,
       dialog: false,
       validarMensajeDetalle: [],
       tipoComprobanteRules: [
@@ -233,6 +263,9 @@
           (v && v.length < 100) ||
           "Numero de Comprobante no puede ser superior a 100",
       ],
+      condicionRules: [
+        (v) => !!v || "Condición es requerido"
+      ],
       validateMensaje: [],
       viewMessageForm: false,
     }),
@@ -242,35 +275,65 @@
         'getClienteListFromService',
         'getArticuloDetailFromService',
         'getTipoComprobanteListFromService',
+        'getCondicionListFromService',
         'getImpuestoListFromService',
         'getArticuloListFromService',
         'getVentaDetailFromService',
       ]),
       fromDateDisp() {
         return this.fecha;
-        // format date, apply validations, etc. Example below.
-        // return this.fromDateVal ? this.formatDate(this.fromDateVal) : "";
       },
 
       formTitle() {
         return this.editedIndex === 1 ? 'Nueva Venta' : 'Editar Venta'
       },
 
+      calcularTotalExcenta: function () {
+        //permite realizar el calculo del excenta
+        let total = 0;
+        for(var i=0;i<this.detalles.length; i++){
+          if (this.detalles[i].impuesto == 0) {
+            total = total + (this.detalles[i].cantidad*this.detalles[i].precio)
+          }
+        }
+        return total
+      },
+
+      calcularTotalIva5: function () {
+        //permite realizar el calculo del iva10
+        let total = 0;
+        for(var i=0;i<this.detalles.length; i++){
+          if (this.detalles[i].impuesto == 5) {
+            total = total + ((this.detalles[i].cantidad*this.detalles[i].precio)*(5/100))
+          }
+        }
+        return total
+      },
+
+      calcularTotalIva10: function () {
+        //permite realizar el calculo del iva10
+        let total = 0;
+        for(var i=0;i<this.detalles.length; i++){
+          if ( this.detalles[i].impuesto== 10) {
+            total = total + ((this.detalles[i].cantidad*this.detalles[i].precio)*(10/100))
+          }
+        }
+        return total
+      },
+
+
+
       calcularTotal: function () {
         let resultado = 0;
         for(var i=0;i<this.detalles.length; i++){
           resultado = resultado + (this.detalles[i].cantidad*this.detalles[i].precio)
+
         }
         return resultado
       },
 
-      calcularTotalImpuesto: function () {
-        return ((this.total*(this.impuesto.value/100))/(1+(this.impuesto.value/100))).toFixed(2);
-      },
 
-      calcularTotalParcial: function () {
-        return this.total - this.totalImpuesto
-      }
+
     },
 
     created() {
@@ -278,6 +341,7 @@
       this.listarProductos();
       this.listarImpuestoChoices();
       this.listarTipoComprobanteChoices();
+      this.listarCondicionChoices();
       if (this.$route.name === 'venta_update') {
         // cuando es edicion seteamos editar el editedIndex a 2
         this.editedIndex = 2;
@@ -299,6 +363,18 @@
       },
       resetValidation() {
         this.$refs.form.resetValidation()
+      },
+
+      listarCondicionChoices (){
+        // obtener en el selector de condicion de compra
+        let self = this;
+        let condArray = [];
+        self.getCondicionListFromService().then(res => {
+          condArray = res.data.condicion;
+          condArray.map(function(resp){
+            self.condicionOpciones.push({text: resp.text, value:resp.id});
+          })
+        })
       },
 
       listarImpuestoChoices (){
@@ -379,12 +455,19 @@
         if (this.validarDetalle()) {
           return;
         }
+        let impuesto = 10
+        if(this.impuesto.hasOwnProperty('value')) {
+          impuesto = this.impuesto.value
+        } else {
+          impuesto = this.impuesto
+        }
         // permite agregar al detalle
         this.detalles.push(
           {
             producto: this.producto,
             cantidad: this.cantidad,
-            precio: this.precio
+            precio: this.precio,
+            impuesto: impuesto
           }
         );
         // luego vaciamos el campo de codigo
@@ -415,7 +498,7 @@
 
         let productoBandera = false;
         for(var i=0; i < this.detalles.length; i++){
-          if (this.detalles[i].producto.value==this.producto.value){
+          if (this.detalles[i].producto==this.producto){
             productoBandera=true;
           }
         }
@@ -439,7 +522,7 @@
         this.getVentaDetailFromService(id).then(res => {
           this.tipo_comprobante = res.data.tipo_comprobante;
           this.numero_comprobante = res.data.numero_comprobante;
-          this.impuesto = res.data.impuesto;
+          this.condicion = res.data.condicion;
           this.cliente = res.data.cliente;
           this.fecha = res.data.fecha;
           this.detalles = res.data.detalles;
@@ -457,8 +540,8 @@
         if (!this.fecha){
           this.validateMensaje.push('Debe ingresar la fecha')
         }
-        if (!this.impuesto){
-          this.validateMensaje.push('Debe ingresar el impuesto')
+        if (!this.condicion){
+          this.validateMensaje.push('Debe ingresar la condicion de venta')
         }
         if (!this.cliente){
           this.validateMensaje.push('Debe ingresar el cliente')
@@ -478,16 +561,16 @@
       guardar() {
         if (this.validar()) {
           if (this.editedIndex == 2) {
-            this.updateCompra({
+            this.updateVenta({
               'id': this.$route.params.id,
               'cliente': this.cliente,
               'tipo_comprobante': this.tipo_comprobante,
               'numero_comprobante': this.numero_comprobante,
-              'impuesto': this.impuesto.value,
+              'condicion': this.condicion,
               'fecha': this.fecha,
               'detalles': this.detalles
             }).then(res => {
-              this.$router.push({name: 'venta'})
+              this.volerListado()
             }).catch(err => {
               console.log(err);
             });
@@ -496,11 +579,11 @@
               'cliente': this.cliente,
               'tipo_comprobante': this.tipo_comprobante,
               'numero_comprobante': this.numero_comprobante,
-              'impuesto': this.impuesto.value,
+              'condicion': this.condicion,
               'fecha': this.fecha,
               'detalles': this.detalles
             }).then(res => {
-              this.$router.push({name: 'venta'})
+              this.volerListado()
             }).catch(err => {
               console.log(err);
             });
