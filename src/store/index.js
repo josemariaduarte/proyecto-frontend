@@ -11,6 +11,8 @@ import Articulo from './articulo'
 import OrdenCompra from './orden-compra'
 import Compra from './compra'
 import Venta from './venta'
+import Caja from './caja'
+import MovimientoCaja from './movimiento_caja'
 
 // export default auth
 
@@ -28,7 +30,9 @@ const store = new Vuex.Store({
     Articulo,
     OrdenCompra,
     Compra,
-    Venta
+    Venta,
+    Caja,
+    MovimientoCaja
   },
 });
 

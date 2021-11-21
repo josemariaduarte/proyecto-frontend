@@ -119,6 +119,20 @@ export default class CompraService {
     })
   }
 
+  /**
+   * Listado de condiciones
+   */
+  static async getFondosDia () {
+    let string = `${process.env.VUE_APP_API}movimientos/montos_acumulados_dia/`
+
+    return axios.get(string, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`
+      }
+    })
+
+  }
+
 
 
 

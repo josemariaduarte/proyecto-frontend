@@ -254,6 +254,7 @@
       totalImpuestoExcenta: 0,
       dialog: false,
       validarMensajeDetalle: [],
+      monto_acumulado_dia: 0,
       tipoComprobanteRules: [
         (v) => !!v || "Tipo Comprobante es requerido"
       ],
@@ -277,7 +278,8 @@
         'getImpuestoListFromService',
         'getCondicionListFromService',
         'getArticuloListFromService',
-        'getCompraDetailFromService'
+        'getCompraDetailFromService',
+        'getFondosDiaFromService'
       ]),
       fromDateDisp() {
         return this.fecha;
@@ -345,6 +347,7 @@
       this.listarImpuestoChoices();
       this.listarTipoComprobanteChoices();
       this.listarCondicionChoices();
+      this.getFondosDelDia();
       if (this.$route.name === 'compra_update') {
         // cuando es edicion seteamos editar el editedIndex a 2
         this.editedIndex = 2;
@@ -416,6 +419,14 @@
           proveedorArray.map(function(resp){
             self.proveedorOpciones.push({text: resp.razon_social, value:resp.id});
           })
+        })
+      },
+
+      getFondosDelDia (){
+        // obtener el monto en caja del dia
+        let self = this;
+        self.getFondosDiaFromService().then(res => {
+            self.monto_acumulado_dia = res.data.acumulado
         })
       },
 
@@ -558,6 +569,10 @@
         if(this.detalles.length == 0) {
           this.validateMensaje.push('Debe ingresar al menos un Detalle')
         }
+        // VALIDAMOS EL TOTAL PARA NO SUPERAR LO QUE HAY EN CAJA
+        if (parseFloat(this.monto_acumulado_dia) < parseFloat(this.total)){
+          this.validateMensaje.push('Esta superando el fondo en Caja: ' + this.monto_acumulado_dia)
+        }
 
         if (this.validateMensaje.length > 0) {
           this.viewMessageForm = true
@@ -575,7 +590,7 @@
               'proveedor': this.proveedor,
               'tipo_comprobante': this.tipo_comprobante,
               'numero_comprobante': this.numero_comprobante,
-              'condicion': this.condicion.value,
+              'condicion': this.condicion,
               'fecha': this.fecha,
               'detalles': this.detalles
             }).then(res => {
@@ -589,7 +604,7 @@
               'proveedor': this.proveedor,
               'tipo_comprobante': this.tipo_comprobante,
               'numero_comprobante': this.numero_comprobante,
-              'condicion': this.condicion.value,
+              'condicion': this.condicion,
               'fecha': this.fecha,
               'detalles': this.detalles
             }).then(res => {

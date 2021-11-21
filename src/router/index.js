@@ -16,6 +16,8 @@ import CompraList from '../components/Compra/CompraList'
 import CompraForm from '../components/Compra/CompraForm'
 import VentaList from '../components/Venta/VentaList'
 import VentaForm from '../components/Venta/VentaForm'
+import CajaList from '../components/Caja/CajaList'
+import MovimientoCajaList from '../components/Caja/MovimientoList'
 import Login from '../components/Login.vue'
 import axios from 'axios'
 import { HTTP } from '@/utils/constants'
@@ -153,6 +155,18 @@ const routes = [
     path: '/venta/:id',
     name: 'venta_update',
     component: VentaForm,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/caja',
+    name: 'caja',
+    component: CajaList,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/movimientos_caja',
+    name: 'movimiento_caja',
+    component: MovimientoCajaList,
     meta: { requiresAuth: true },
   },
   {

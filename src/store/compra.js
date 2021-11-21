@@ -65,6 +65,13 @@ export default {
       }
     },
 
+    getFondosDiaFromService: () => async () => {
+      if (localStorage.getItem('access')) {
+        return CompraService.getFondosDia()
+          .then(res => res)
+          .catch(err => err)
+      }
+    },
 
 
 
