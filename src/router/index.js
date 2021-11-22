@@ -13,6 +13,7 @@ import ArticuloForm from '../components/ArticuloForm'
 import OrdenCompraList from '../components/Compra/OrdenCompraList'
 import OrdenCompraForm from '../components/Compra/OrdenCompraForm'
 import CompraList from '../components/Compra/CompraList'
+import ReporteCompra from '../components/Compra/ReporteCompra'
 import CompraForm from '../components/Compra/CompraForm'
 import VentaList from '../components/Venta/VentaList'
 import VentaForm from '../components/Venta/VentaForm'
@@ -131,6 +132,12 @@ const routes = [
     path: '/compra/:id',
     name: 'compra_update',
     component: CompraForm,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/reporte_compra',
+    name: 'reporte_compra',
+    component: ReporteCompra,
     meta: { requiresAuth: true },
   },
   {
