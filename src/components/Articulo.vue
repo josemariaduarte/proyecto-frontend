@@ -2,6 +2,9 @@
     <v-layout >
         <v-flex>
             <v-toolbar flat color="white">
+                <v-btn @click="crearPdf()">
+                    <v-icon>print</v-icon>
+                </v-btn>
                 <v-toolbar-title>Articulos</v-toolbar-title>
                 <v-divider class="mx-2" inset vertical></v-divider>
                 <v-spacer></v-spacer>
@@ -64,6 +67,8 @@
 </template>
 <script>
   import { mapActions, mapGetters } from 'vuex'
+  import jsPDF from 'jspdf'
+  import autoTable from 'jspdf-autotable'
   // import axios from 'axios';
   export default {
     data() {
@@ -79,8 +84,10 @@
         articulos: [],
         headers: [
           {text: 'Opciones', value: 'opciones', sortable: false},
+          {text: 'Codigo', value: 'id', sortable: true},
           {text: 'Nombre', value: 'nombre', sortable: true},
           {text: 'Cantidad', value: 'cantidad', sortable: true},
+          {text: 'Precio Venta', value: 'precio_venta', sortable: true},
           {text: 'Descripcion', value: 'descripcion', sortable: true},
         ],
         editedIndex: -1,
@@ -129,6 +136,36 @@
         'activateCategoria',
         'deactivateCategoria'
       ]),
+      crearPdf() {
+        // permite exportar en pdf
+        var columns = [
+          {title:"Codigo", dataKey: "codigo"},
+          {title: "Nombre", dataKey: "nombre"},
+          {title: 'Cantidad', dataKey: 'cantidad'},
+          {title: 'Precio Venta', dataKey: 'precio_venta'},
+          {title: 'Descripcion', dataKey: 'descripcion'},
+        ];
+        var rows = [];
+        this.articulos.map(function (x) {
+          rows.push({
+            codigo: x.id,
+            nombre: x.nombre,
+            cantidad: x.cantidad,
+            precio_venta: x.precio_venta,
+            precio_venta: x.precio_venta,
+            descripcion: x.descripcion
+          })
+        })
+        const doc = new jsPDF('p', 'pt');
+        doc.autoTable(columns,rows,{
+          margin: {top:60},
+          addPageContent: function (data) {
+            doc.text("Listado de Articulo", 40, 30);
+          }
+        })
+
+        doc.save("Articulos.pdf");
+      },
       listar () {
         this.getArticuloListFromService(
           1,
