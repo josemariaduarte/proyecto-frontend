@@ -16,9 +16,9 @@
                 <v-dialog v-model="comprobanteModal" max-width="1000px">
                     <v-card>
                         <v-card-title class="headline">
-                            <v-btn>
+                            <v-btn @click="crearPDF()">
                                 <v-icon>print</v-icon>
-                            </v-btn> <v-spacer/>Factura de Venta
+                            </v-btn>Factura de Venta
                         </v-card-title>
                         <v-card-text>
                             <div id="factura">
@@ -64,7 +64,7 @@
                                                 <th>CANT</th>
                                                 <th>DESCRIPCION</th>
                                                 <th>PRECIO UNIT</th>
-                                                <th>IVA </th>
+                                                <th>IVA %</th>
                                                 <th>PRECIO TOTAL</th>
                                             </tr>
                                             </thead>
@@ -96,6 +96,13 @@
                                                 <th></th>
                                                 <th></th>
                                                 <th></th>
+                                                <th style="text-align:right;">EXCENTA</th>
+                                                <th style="text-align:right;">{{ total_excenta }}</th>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
                                                 <th style="text-align:right;">TOTAL</th>
                                                 <th style="text-align:right;">{{ total }} Gs</th>
                                             </tr>
@@ -114,7 +121,7 @@
 
                         </v-card-text>
                         <v-card-actions>
-                            <v-btn color="blue darken-1" flat>Cancelar</v-btn>
+                            <v-btn @click="ocultarComprobante()" color="blue darken-1" flat>Cancelar</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
@@ -167,6 +174,8 @@
 </template>
 <script>
   import {  mapGetters, mapActions } from 'vuex'
+  import jsPDF from 'jspdf'
+  import html2canvas from 'html2canvas'
   export default {
     data() {
       return {
@@ -184,6 +193,7 @@
           {text: 'Fecha', value: 'fecha', sortable: true},
           {text: 'Cliente', value: 'cliente_name', sortable: true},
           {text: 'Tipo Comprobante', value: 'tipo_comprobante_name', sortable: true},
+          {text: 'Nro Comprobante', value: 'numero_comprobante', sortable: true},
           {text: 'Total', value: 'total', sortable: true},
         ],
         addModal: 0,
@@ -201,6 +211,7 @@
         total: 0,
         total_iva5: 0,
         total_iva10: 0,
+        total_excenta: 0,
         detalles: [],
       }
     },
@@ -244,10 +255,11 @@
         this.total=item.total;
         this.total_iva5=item.total_iva5;
         this.total_iva10=item.total_iva10;
+        this.total_excenta=item.total_excenta;
         this.detalles=item.detalles;
         this.comprobanteModal=1;
       },
-      ocultarComprobante(item) {
+      ocultarComprobante() {
         this.comprobanteModal=0;
       },
       listar () {
@@ -313,6 +325,32 @@
         });
 
       },
+
+      crearPDF(){
+        var quotes = document.getElementById('factura');
+        html2canvas(quotes).then(function (canvas) {
+          var imgData = canvas.toDataURL('image/png');
+          var imgWidth = 210;
+          var pageHeight = 280;
+          var imgHeight = canvas.height * imgWidth / canvas.width;
+          var heightLeft = imgHeight;
+
+          var doc = new jsPDF('p', 'mm', 'a4');
+          var position = 0;
+
+          doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight
+
+          while (heightLeft >= 0){
+            position = heightLeft - imgHeight;
+            doc.addPage();
+            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight
+          }
+          doc.save('FacturaVenta.pdf')
+
+        })
+      }
 
     },
   }

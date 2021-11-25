@@ -13,6 +13,7 @@ import Compra from './compra'
 import Venta from './venta'
 import Caja from './caja'
 import MovimientoCaja from './movimiento_caja'
+import Timbrado from './timbrado'
 
 // export default auth
 
@@ -32,7 +33,8 @@ const store = new Vuex.Store({
     Compra,
     Venta,
     Caja,
-    MovimientoCaja
+    MovimientoCaja,
+    Timbrado
   },
 });
 

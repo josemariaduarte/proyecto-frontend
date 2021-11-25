@@ -88,6 +88,7 @@
           {text: 'Nombre', value: 'nombre', sortable: true},
           {text: 'Cantidad', value: 'cantidad', sortable: true},
           {text: 'Precio Venta', value: 'precio_venta', sortable: true},
+          {text: '% Ganancia', value: 'porcentaje_ganancia', sortable: true},
           {text: 'Descripcion', value: 'descripcion', sortable: true},
         ],
         editedIndex: -1,

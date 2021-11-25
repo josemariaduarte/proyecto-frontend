@@ -66,6 +66,21 @@
                                           label="Unidad Medida">
                                 </v-select>
                             </v-flex>
+                            <v-flex xs6 sm6 md6>
+                                <v-text-field
+                                        v-model="porcentaje_ganancia"
+                                        type="number"
+                                        label="Porcentaje Ganancia">
+                                </v-text-field>
+                            </v-flex>
+                            <v-flex xs6 sm6 md6>
+                                <v-select v-model="impuesto"
+                                          :items="impuestoOpciones"
+                                          item-text="text"
+                                          item-value="value"
+                                          label="Impuesto">
+                                </v-select>
+                            </v-flex>
 <!--                            <v-flex xs6 sm6 md6>-->
 <!--                                <v-select v-model="estado_civil"-->
 <!--                                          :items="estadoCivilOpciones"-->
@@ -103,13 +118,16 @@
       descripcion: '',
       proveedor: '',
       cantidad_minima_stock: '',
+      porcentaje_ganancia: 0,
       subcategoria: '',
       deposito: '',
       unidad_medida: '',
+      impuesto: {'text': '10%', value: 10},
       proveedorOpciones: [],
       depositoOpciones: [],
       subCategoriaOpciones: [],
       unidadOpciones: [],
+      impuestoOpciones: [],
       nombreRules: [
         (v) => !!v || "Nombre es requerido",
         (v) =>
@@ -130,7 +148,8 @@
         'getDepositoListFromService',
         'getSubCategoriaListFromService',
         'getUnidadMedidaListFromService',
-        'getArticuloDetailFromService'
+        'getArticuloDetailFromService',
+        'getImpuestoListFromService'
       ]),
 
 
@@ -145,6 +164,7 @@
       this.listarDepositos();
       this.listarSubCategoria();
       this.listarUnidadMedida();
+      this.listarImpuestoChoices()
       // this.listarEstadoCivil();
       if (this.$route.name === 'articulo_update') {
         // cuando es edicion seteamos editar el editedIndex a 2
@@ -222,6 +242,21 @@
       },
 
 
+      listarImpuestoChoices (){
+        // obtener en el selector de sexo
+        let self = this;
+        let impuestoArray = [];
+        self.getImpuestoListFromService().then(res => {
+          impuestoArray = res.data.impuesto;
+          impuestoArray.map(function(resp){
+            self.impuestoOpciones.push({text: resp.text, value:resp.id});
+          });
+          //tomamos el 10 % por defecto
+          self.impuesto = {'text': res.data.impuesto[1].text, value:res.data.impuesto[1].id}
+        })
+      },
+
+
       getArticuloDetail (id) {
         this.getArticuloDetailFromService(id).then(res => {
           this.nombre = res.data.nombre;
@@ -231,6 +266,7 @@
           this.deposito = res.data.deposito;
           this.unidad_medida = res.data.unidad_medida;
           this.proveedor = res.data.proveedor;
+          this.porcentaje_ganancia=res.data.porcentaje_ganancia;
         })
       },
 
@@ -245,6 +281,7 @@
             'deposito': this.deposito,
             'unidad_medida': this.unidad_medida,
             'proveedor': this.proveedor,
+            'porcentaje_ganancia': this.porcentaje_ganancia
           }).then(res =>{
             this.$router.push({ name: 'articulo'})
           }).catch(err =>{
@@ -260,6 +297,7 @@
             'deposito': this.deposito,
             'unidad_medida': this.unidad_medida,
             'proveedor': this.proveedor,
+            'porcentaje_ganancia': this.porcentaje_ganancia
           }).then(res =>{
             this.$router.push({ name: 'articulo'})
           }).catch(err =>{

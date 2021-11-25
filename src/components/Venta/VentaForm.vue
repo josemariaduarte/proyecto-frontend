@@ -25,10 +25,20 @@
                                           label="Tipo Comprobante">
                                 </v-select>
                             </v-flex>
+                            <v-flex xs6 sm6 md6 v-if="viewTimbrado">
+                                <v-select v-model="timbrado"
+                                          :items="timbradoOpciones"
+                                          item-text="text"
+                                          item-value="value"
+                                          item-factura="factura"
+                                          label="Timbrado">
+                                </v-select>
+                            </v-flex>
                             <v-flex xs6 sm6 md6>
                                 <v-text-field
                                         v-model="numero_comprobante"
                                         counter="150"
+                                        :readonly="viewTimbrado"
                                         :rules="numeroComprobanteRules"
                                         label="Numero Comprobante">
 
@@ -80,7 +90,7 @@
                                     <v-icon dark>list</v-icon>
                                 </v-btn>
                             </v-flex>
-                            <v-flex xs12 sm2 md12 lg12 xl2>
+                            <v-flex xs12 sm12 md12 lg12 xl12>
                                 <template>
                                     <v-data-table
                                             :headers="cabeceraDetalles"
@@ -113,7 +123,7 @@
                                                       :items="impuestoOpciones"
                                                       item-text="text"
                                                       item-value="value"
-                                                      :readonly="item.id"
+                                                      :readonly="true"
                                                       label="Impuesto">
                                             </v-select>
                                             <!--                                            <v-text-field v-model="item.product.nombre" readonly></v-text-field>-->
@@ -161,8 +171,6 @@
                                     <v-layout wrap>
 
                                         <v-flex xs12 sm12 md12>
-
-
                                             <v-select v-model="producto"
                                                       :items="productos"
                                                       item-text="text"
@@ -173,21 +181,9 @@
                                         <v-flex xs12 sm6 md6>
                                             <v-text-field type="number" v-model="cantidad" label="Cantidad"></v-text-field>
                                         </v-flex>
-
                                         <v-flex xs12 sm6 md6>
                                             <v-text-field type="number" v-model="precio" label="Precio" readOnly></v-text-field>
                                         </v-flex>
-                                        <v-flex xs12 sm12 md12>
-                                            <v-select v-model="impuesto"
-                                                      :items="impuestoOpciones"
-                                                      item-text="text"
-                                                      item-value="value"
-                                                      label="Impuesto">
-                                            </v-select>
-                                        </v-flex>
-
-
-
                                         <v-flex xs12 sm12 md12>
                                             <div class="red--text" v-for="v in validarMensajeDetalle" :key="v" v-text="v">
                                             </div>
@@ -229,8 +225,11 @@
       tipo_comprobante: '',
       numero_comprobante: '',
       cantidad_maxima_stock: 0,
+      viewTimbrado: false,
       condicion: {'text': 'CONTADO', value: "CONTADO"},
       condicionOpciones: [],
+      timbrado: '',
+      timbradoOpciones: [],
       impuesto: {'text': '10%', value: 10},
       clienteOpciones: [],
       tipoComprobanteOpciones: [],
@@ -279,6 +278,7 @@
         'getImpuestoListFromService',
         'getArticuloListFromService',
         'getVentaDetailFromService',
+        'getTimbradoListFromService',
       ]),
       fromDateDisp() {
         return this.fecha;
@@ -342,6 +342,7 @@
       this.listarImpuestoChoices();
       this.listarTipoComprobanteChoices();
       this.listarCondicionChoices();
+      this.listarTimbrados();
       if (this.$route.name === 'venta_update') {
         // cuando es edicion seteamos editar el editedIndex a 2
         this.editedIndex = 2;
@@ -400,6 +401,8 @@
           tipoArray = res.data.tipo_comprobante;
           tipoArray.map(function(resp){
             self.tipoComprobanteOpciones.push({text: resp.text, value:resp.id});
+            self.tipo_comprobante = {'text': res.data.tipo_comprobante[1].text, value:res.data.tipo_comprobante[1].id}
+            self.viewTimbrado = true;
           })
         })
       },
@@ -425,7 +428,26 @@
           console.log('ok')
           productoArray = res.data.results;
           productoArray.map(function(resp){
-            self.productos.push({text: resp.nombre, value:resp.id});
+            self.productos.push({text: resp.id + " - " +resp.nombre, value:resp.id});
+          })
+        })
+      },
+
+      listarTimbrados (){
+        // obtener en el selector de orden de compra
+
+        let self = this;
+        let timbradoArray = [];
+        self.getTimbradoListFromService(1, 100).then(res => {
+          timbradoArray = res.data.results;
+          timbradoArray.map(function(resp){
+            self.timbradoOpciones.push({
+              text: " Nro " +resp.numero,
+              value:resp.id,
+              codigo_establecimiento: resp.codigo_establecimiento,
+              punto_expedicion: resp.punto_expedicion,
+              secuencia: resp.secuencia_actual
+            });
           })
         })
       },
@@ -521,6 +543,7 @@
         // traemos data de la compra seleccionada
         this.getVentaDetailFromService(id).then(res => {
           this.tipo_comprobante = res.data.tipo_comprobante;
+          this.timbrado = res.data.timbrado;
           this.numero_comprobante = res.data.numero_comprobante;
           this.condicion = res.data.condicion;
           this.cliente = res.data.cliente;
@@ -564,6 +587,7 @@
             this.updateVenta({
               'id': this.$route.params.id,
               'cliente': this.cliente,
+              'timbrado': this.timbrado,
               'tipo_comprobante': this.tipo_comprobante,
               'numero_comprobante': this.numero_comprobante,
               'condicion': this.condicion,
@@ -577,7 +601,8 @@
           } else {
             this.saveVenta({
               'cliente': this.cliente,
-              'tipo_comprobante': this.tipo_comprobante,
+              'timbrado': this.timbrado,
+              'tipo_comprobante': this.tipo_comprobante.value,
               'numero_comprobante': this.numero_comprobante,
               'condicion': this.condicion,
               'fecha': this.fecha,
@@ -596,6 +621,12 @@
 
       volerListado(){
         this.$router.push({name: 'venta'})
+      },
+
+      padLeadingZeros(num, size) {
+        var s = num+"";
+        while (s.length < size) s = "0" + s;
+        return s;
       }
 
 
@@ -609,14 +640,43 @@
         this.getArticuloDetailFromService(value).then(res => {
             this.precio = res.data.precio_venta;
             this.cantidad_maxima_stock = res.data.cantidad
+            this.impuesto = res.data.impuesto
 
         })
       },
 
+      tipo_comprobante (obj) {
+        console.log('entramos al watch del tipo de comprobante', obj.value)
+        // debemos traer los datos del producto
+        if (obj.hasOwnProperty('value')) {
+          obj = obj.value
+        }
 
+        if (parseInt(obj) == 2) {
+            this.viewTimbrado = true;
+        } else {
+          this.viewTimbrado = false;
+          this.numero_comprobante = null;
+          this.timbrado = null;
+
+        }
+      },
+
+      timbrado (value) {
+        function padLeadingZeros(num, size) {
+          var s = num+"";
+          while (s.length < size) s = "0" + s;
+          return s;
+        }
+        if (this.editedIndex != 2) {
+          for (let i = 0; i < this.timbradoOpciones.length; i++) {
+            if (this.timbradoOpciones[i].value == value ) {
+              this.numero_comprobante = this.timbradoOpciones[i].codigo_establecimiento + "-" + this.timbradoOpciones[i].punto_expedicion + "-" + padLeadingZeros(this.timbradoOpciones[i].secuencia + 1,7)
+            }
+          }
+        }
+      }
     }
-
-
   }
 </script>
 
